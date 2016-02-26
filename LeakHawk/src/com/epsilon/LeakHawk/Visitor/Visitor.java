@@ -28,7 +28,7 @@ public class Visitor {
 		
 		visitor.visit();
 
-	/*	while (true) {
+		while (true) {
 
 			String[] newLines = visitor.setProxyServerAuto();
 			for (int j = 0; j < newLines.length; j++) {
@@ -36,7 +36,7 @@ public class Visitor {
 
 			}
 			Thread.sleep(1000);
-		}*/
+		}
 
 		// visitor.visit();
 
