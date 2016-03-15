@@ -1,10 +1,8 @@
 package com.epsilon.LeakHawk.scrapper;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,31 +12,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.text.Document;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.epsilon.scrapper.FeedEntry;
-import com.epsilon.scrapper.ScrapperJob;
-import com.epsilon.scrapper.ScrapperManager;
+
 
 //import org.jsoup.nodes.Document;
 
 public class ScrapperManager {
 
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
-	
-	private static String BASE_URL = "http://pastebin.com/api_scrape_item.php?i=";
 
-	private static int MAX_URLS_PER_PAGE = 20;
-	
 	private static int FEEDS_PER_HIT = 100;
 
 	public static void main(String[] args) {
@@ -61,10 +46,11 @@ public class ScrapperManager {
 
 			// Scan the web page and extract required url list
 			List<String> keyList = performScrapper("http://pastebin.com/api_scraping.php?limit=" + FEEDS_PER_HIT);
-			List<String> newKeyList = new ArrayList<String>();
+			List<String> newKeyList = null;
 					
 			printList(keyList);
-			if( count > 0 ){							
+			if( count > 0 ){	
+				newKeyList = new ArrayList<String>();
 				for( String key : keyList ){					
 					if( key.equals( firstElement )){
 						break;
@@ -76,17 +62,18 @@ public class ScrapperManager {
 				firstElement = newKeyList.get(0);					
 			} else {						
 				firstElement = keyList.get(0);
+				newKeyList = keyList;
 			}
-						
+					
+			// Start a separate thread to download the selected pages.
 			ScrapperJob scrapperJob = new ScrapperJob();
+			scrapperJob.setKeyList( newKeyList );	
+			scrapperJob.setKeywordList(keyWordList);
 			scrapperJob.start();
 			
-//			if ( urlList.size() > 0 ) {
-//				launch( urlList, keyWordList );
-//			}
 			long end = System.currentTimeMillis();
 
-			System.out.println("*************** Scrapper Stopped ****************");
+			System.out.println("*************** Scrapper Stopped ****************\n");
 			
 			long timeTakenToProcess = (end - start);
 			System.out.println("Time taken for the scrapper process : " + timeTakenToProcess + " ms");
@@ -119,8 +106,7 @@ public class ScrapperManager {
 	public List<String> readKeyWordList(String fileName) {
 
 		List<String> words = new ArrayList<String>();
-		BufferedReader reader = null;
-		;
+		BufferedReader reader = null;		
 		String line;
 		try {
 			reader = new BufferedReader(new FileReader(fileName));
@@ -140,64 +126,11 @@ public class ScrapperManager {
 			}
 		}
 		return words;
-
 	}
 
-	public void launch(List<String> urlList, List<String> keyWordList) {
 
-		for (String url : urlList) {
-			if (isContainKeyWord(url, keyWordList)) {
-				downloadPage(url);
-			}
-		}
-	}
 
-	public boolean isContainKeyWord(String url, List<String> keyWordList) {
 
-		try {
-			// System.out.println(url);
-			URL my_url = new URL(url);
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					my_url.openStream()));
-			String strTemp = "";
-			while (null != (strTemp = br.readLine())) {
-
-				for (String keyword : keyWordList) {
-					if (strTemp.toUpperCase().contains(keyword.toUpperCase())) {
-						return true;
-					}
-				}
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return false;
-	}
-
-	public void downloadPage(String url) {
-
-		System.out.println("Downloading page : " + url);
-		Document doc;
-		try {
-
-			String fileName = url.substring((url.length() - 8), url.length());
-			URL urlObj = new URL(url);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					urlObj.openStream()));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				writer.write(line);
-				writer.newLine();
-			}
-			reader.close();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	private List<String> performScrapper(String url) {
 
@@ -258,7 +191,7 @@ public class ScrapperManager {
 	
 		
 		
-		
+	/*
 	private List<String> performScrapperEx(String url) {
 
 		System.out.println("Scanning page : " + url);
@@ -305,5 +238,7 @@ public class ScrapperManager {
 		}
 		return hyperLinkList;
 	}
+	
+	*/
 
 }
