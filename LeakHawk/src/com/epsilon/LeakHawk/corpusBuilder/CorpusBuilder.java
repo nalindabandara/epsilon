@@ -11,7 +11,7 @@ public class CorpusBuilder {
 	public static void main(String[] args) throws Exception {
 
 	    String key="AIzaSyCUsaV_IkyqFsbUq_6Aj5qnR8AzZgFnKkg";
-	    String qry="techcert";
+	    String qry="combank";
 	    URL url = new URL(
 	            "https://www.googleapis.com/customsearch/v1?key="+key+ "&cx=013036536707430787589:_pqjad5hr1a&q="+ qry + "&alt=json");
 	    HttpURLConnection conn = (HttpURLConnection) url.openConnection();

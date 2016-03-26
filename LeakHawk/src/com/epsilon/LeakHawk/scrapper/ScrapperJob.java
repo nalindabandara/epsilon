@@ -35,6 +35,9 @@ public class ScrapperJob extends Thread {
 										
 					if (isContainKeyWord( feedEntry.getScrapperUrl(), this.keywordList )) {
 						//downloadPage( feedEntry.getScrapperUrl(), feedEntry.getKey());
+
+						
+						// as we have multiple threads, DB access is limited to one thread					
 						
 						synchronized (this) {
 							feedEntry.save();
