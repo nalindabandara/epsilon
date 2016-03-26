@@ -9,12 +9,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
+import com.epsilon.LeakHawk.db.DBConnector;
+
 
 public class ScrapperJob extends Thread {
 
 	private static String BASE_URL = "http://pastebin.com/api_scrape_item.php?i=";
 	
-	private List<String> keyList;
+	private List<FeedEntry> feedEntryList;
 	
 	private List<String> keywordList;
 	
@@ -27,14 +29,17 @@ public class ScrapperJob extends Thread {
 
 		if( this.keywordList != null && this.keywordList.size() > 0 ){
 			
-			if( this.keyList != null && this.keyList.size() > 0 ){
+			if( this.feedEntryList != null && this.feedEntryList.size() > 0 ){
 				
-				for (String key : this.keyList) {
-					
-					String url = getUrl( key );
-					if (isContainKeyWord( url, this.keywordList )) {
-						downloadPage(url, key);
-					}
+				for (FeedEntry feedEntry : this.feedEntryList) {
+										
+					if (isContainKeyWord( feedEntry.getScrapperUrl(), this.keywordList )) {
+						//downloadPage( feedEntry.getScrapperUrl(), feedEntry.getKey());
+						
+						synchronized (this) {
+							feedEntry.save();
+						}
+					}				
 				}
 			} else {
 				System.out.println( "****************** No urls were found for the scrapper job ******************");
@@ -111,12 +116,14 @@ public class ScrapperJob extends Thread {
 	}
 	
 
-	public List<String> getKeyList() {
-		return keyList;
+
+
+	public List<FeedEntry> getFeedEntryList() {
+		return feedEntryList;
 	}
 
-	public void setKeyList(List<String> keyList) {
-		this.keyList = keyList;
+	public void setFeedEntryList(List<FeedEntry> feedEntryList) {
+		this.feedEntryList = feedEntryList;
 	}
 
 	public List<String> getKeywordList() {
@@ -125,12 +132,6 @@ public class ScrapperJob extends Thread {
 
 	public void setKeywordList(List<String> keywordList) {
 		this.keywordList = keywordList;
-	}
-	
-	
-	private String getUrl( String key ){
-		
-		return BASE_URL.concat(key);
 	}
 	
 }

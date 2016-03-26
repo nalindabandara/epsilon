@@ -35,7 +35,7 @@ public class ScrapperManager {
 	public void execute() {
 
 		int count = 0;
-		String firstElement = "";
+		FeedEntry firstElement = null;
 		while (true) {			
 			System.out.println("*************** Scrapper Started ****************");
 			printDate();
@@ -45,29 +45,29 @@ public class ScrapperManager {
 			List<String> keyWordList = readKeyWordList("keywords.txt");
 
 			// Scan the web page and extract required url list
-			List<String> keyList = performScrapper("http://pastebin.com/api_scraping.php?limit=" + FEEDS_PER_HIT);
-			List<String> newKeyList = null;
+			List<FeedEntry> feedEntryList = performScrapper("http://pastebin.com/api_scraping.php?limit=" + FEEDS_PER_HIT);
+			List<FeedEntry> newFeedEntryList = null;
 					
-			printList(keyList);
+			printList(feedEntryList);
 			if( count > 0 ){	
-				newKeyList = new ArrayList<String>();
-				for( String key : keyList ){					
+				newFeedEntryList = new ArrayList<FeedEntry>();
+				for( FeedEntry key : feedEntryList ){					
 					if( key.equals( firstElement )){
 						break;
 					} else {
-						newKeyList.add(key);
+						newFeedEntryList.add(key);
 					}
 				}
-				printList(newKeyList);
-				firstElement = newKeyList.get(0);					
+				printList(newFeedEntryList);
+				firstElement = newFeedEntryList.get(0);					
 			} else {						
-				firstElement = keyList.get(0);
-				newKeyList = keyList;
+				firstElement = feedEntryList.get(0);
+				newFeedEntryList = feedEntryList;
 			}
 					
 			// Start a separate thread to download the selected pages.
 			ScrapperJob scrapperJob = new ScrapperJob();
-			scrapperJob.setKeyList( newKeyList );	
+			scrapperJob.setFeedEntryList( newFeedEntryList );	
 			scrapperJob.setKeywordList(keyWordList);
 			scrapperJob.start();
 			
@@ -88,10 +88,10 @@ public class ScrapperManager {
 	}
 
 	
-	private void printList(List<String> lst ){
+	private void printList(List<FeedEntry> lst ){
 		
-		for( String ls : lst ){
-			System.out.println(ls);
+		for( FeedEntry ls : lst ){
+			System.out.println(ls.toString());
 		}
 		System.out.println("Size of the length : " + lst.size());
 	}
@@ -128,14 +128,10 @@ public class ScrapperManager {
 		return words;
 	}
 
-
-
-
-
-	private List<String> performScrapper(String url) {
+	private List<FeedEntry> performScrapper(String url) {
 
 		System.out.println("Scanning page : " + url);
-		List<String> keyList = new ArrayList<String>();
+		List<FeedEntry> feedEntryList = new ArrayList<FeedEntry>();
 		URL urlObj = null;
 		JSONParser parser = new JSONParser();
 		try {
@@ -143,21 +139,21 @@ public class ScrapperManager {
 			urlObj = new URL( url );
 			String webPageContent = getStringFromInputStream( urlObj.openStream() );
 			
+			System.out.println( webPageContent );
 			Object obj = parser.parse( webPageContent );
 	        JSONArray array = (JSONArray)obj;
 	        	        
 	        for( int i = 0; i < array.size(); i++ ) {	        	
 	        	JSONObject jsonObj = (JSONObject) array.get(i);	        	
 	        	FeedEntry feedEntry = new FeedEntry( jsonObj );	        		        	
-	        	keyList.add( feedEntry.getKey() );
-	        	//System.out.println( feedEntry.getKey() );
+	        	feedEntryList.add( feedEntry);	        	
 	        }	        	       
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return keyList;
+		return feedEntryList;
 	}
 
 	
@@ -166,7 +162,6 @@ public class ScrapperManager {
 
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
-
 		String line;
 		try {
 
