@@ -13,6 +13,7 @@ CREATE TABLE feed_entry(
    entry_url VARCHAR(100) NOT NULL,
    entry_title VARCHAR(500) ,
    entry_file LONGBLOB,
+   entry_matchingKeyword VARCHAR(100) ,
    entry_user VARCHAR(100) ,   
    PRIMARY KEY ( entry_id )
 );

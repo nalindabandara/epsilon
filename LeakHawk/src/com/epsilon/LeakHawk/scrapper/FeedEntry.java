@@ -31,7 +31,11 @@ public class FeedEntry extends SavableObject {
 		
 	private String title;
 	
+	private String matchingKeyword;
+	
 	private String user;
+	
+	
 
 	
 	public FeedEntry( JSONObject jsonObj ){
@@ -91,6 +95,15 @@ public class FeedEntry extends SavableObject {
 		this.user = user;
 	}
 
+	public String getMatchingKeyword() {
+		return matchingKeyword;
+	}
+
+
+	public void setMatchingKeyword(String matchingKeyword) {
+		this.matchingKeyword = matchingKeyword;
+	}
+	
 
 	@Override
 	public String toString() {
@@ -145,8 +158,9 @@ public class FeedEntry extends SavableObject {
             sb.append("entry_key, "); 
             sb.append("entry_url, ");
             sb.append("entry_title, ");
-            sb.append("entry_file, ");                       
-            sb.append("entry_user ) VALUES ( ?, ?, ?, ?, ? ); ");
+            sb.append("entry_file, ");
+            sb.append("entry_matchingKeyword, ");
+            sb.append("entry_user ) VALUES ( ?, ?, ?, ?, ?, ? ); ");
             st = con.prepareStatement( sb.toString() );
 
             int count = 0;           
@@ -155,6 +169,7 @@ public class FeedEntry extends SavableObject {
             st.setString( ++count, getScrapperUrl() ); 
             st.setString( ++count, getTitle() ); 
             st.setBlob(++count, getEntryStream());
+            st.setString( ++count, getMatchingKeyword() ); 
             st.setString( ++count, getUser() ); 
                         
             st.execute();

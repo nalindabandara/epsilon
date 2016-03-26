@@ -33,7 +33,7 @@ public class ScrapperJob extends Thread {
 				
 				for (FeedEntry feedEntry : this.feedEntryList) {
 										
-					if (isContainKeyWord( feedEntry.getScrapperUrl(), this.keywordList )) {
+					if (isContainKeyWord( feedEntry , this.keywordList )) {
 						//downloadPage( feedEntry.getScrapperUrl(), feedEntry.getKey());
 
 						
@@ -55,10 +55,10 @@ public class ScrapperJob extends Thread {
 		
 	}
 		
-	private boolean isContainKeyWord(String url, List<String> keyWordList) {
+	private boolean isContainKeyWord(FeedEntry entry, List<String> keyWordList) {
 
 		try {			
-			URL my_url = new URL(url);
+			URL my_url = new URL(entry.getScrapperUrl());
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					my_url.openStream()));
 			String strTemp = "";
@@ -66,6 +66,11 @@ public class ScrapperJob extends Thread {
 
 				for (String keyword : keyWordList) {
 					if (strTemp.toUpperCase().contains(keyword.toUpperCase())) {
+						
+						entry.setMatchingKeyword(keyword);
+						
+						//exit after the first successful hit
+						
 						return true;
 					}
 				}
