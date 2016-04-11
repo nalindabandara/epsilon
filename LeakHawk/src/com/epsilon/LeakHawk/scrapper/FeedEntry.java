@@ -173,7 +173,7 @@ public class FeedEntry extends SavableObject {
             st.setString( ++count, getUser() ); 
                         
             st.execute();
-            System.out.println( "Feed entry was successfully saved to database - key : " + getKey() );
+            System.out.println( "Feed entry was successfully saved to database - key : " + getKey() + "  " + getMatchingKeyword());
             return new DBTransaction<FeedEntry>( DBTransaction.SUCCESS, "Feed entry was successfully saved to database" );
         } catch (Exception e ){
         	throw e;

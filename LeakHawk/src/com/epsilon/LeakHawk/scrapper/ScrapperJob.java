@@ -31,19 +31,29 @@ public class ScrapperJob extends Thread {
 			
 			if( this.feedEntryList != null && this.feedEntryList.size() > 0 ){
 				
-				for (FeedEntry feedEntry : this.feedEntryList) {
-										
-					if (isContainKeyWord( feedEntry , this.keywordList )) {
-						//downloadPage( feedEntry.getScrapperUrl(), feedEntry.getKey());
-
+				if( ScrapperManager.isApplyingFilter ){
+				
+					for (FeedEntry feedEntry : this.feedEntryList) {
 						
-						// as we have multiple threads, DB access is limited to one thread					
-						
+						if (isContainKeyWord( feedEntry , this.keywordList )) {
+							
+							// as we have multiple threads, DB access is limited to one thread											
+							synchronized (this) {
+								feedEntry.save();
+							}
+						}				
+					}
+				} else {
+					for (FeedEntry feedEntry : this.feedEntryList) {
+																
+						// as we have multiple threads, DB access is limited to one thread											
 						synchronized (this) {
 							feedEntry.save();
-						}
-					}				
+						}									
+					}										
 				}
+				
+				
 			} else {
 				System.out.println( "****************** No urls were found for the scrapper job ******************");
 			}

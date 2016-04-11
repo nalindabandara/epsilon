@@ -25,6 +25,10 @@ public class ScrapperManager {
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
 
 	private static int FEEDS_PER_HIT = 100;
+	
+	public static boolean isApplyingFilter;
+
+	
 
 	public static void main(String[] args) {
 
@@ -34,6 +38,24 @@ public class ScrapperManager {
 
 	public void execute() {
 
+		System.out.print("Do you want to apply the cintext filtering ? [y/n] : ");
+		
+		try{
+		    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		    String s = bufferRead.readLine();
+		      
+		    
+		    if( s.equalsIgnoreCase("y")){
+		    	setApplyingFilter(true);		    	
+		    } else {
+		    	setApplyingFilter(false);		    	
+		    }
+		    System.out.println( isApplyingFilter());
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+		
 		int count = 0;
 		FeedEntry firstElement = null;
 		while (true) {			
@@ -235,5 +257,13 @@ public class ScrapperManager {
 	}
 	
 	*/
+	
+	public boolean isApplyingFilter() {
+		return isApplyingFilter;
+	}
+
+	public void setApplyingFilter(boolean isApplyingFilter) {
+		this.isApplyingFilter = isApplyingFilter;
+	}
 
 }
