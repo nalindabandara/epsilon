@@ -38,7 +38,7 @@ public class ScrapperManager {
 
 	public void execute() {
 
-		System.out.print("Do you want to apply the cintext filtering ? [y/n] : ");
+		System.out.print("Do you want to apply the context filtering ? [y/n] : ");
 		
 		try{
 		    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
