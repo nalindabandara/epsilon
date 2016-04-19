@@ -18,8 +18,7 @@ public class ScrapperJob extends Thread {
 	
 	private List<FeedEntry> feedEntryList;
 	
-	private List<String> keywordList;
-	
+		
 	public void run(){
 		
 		launch();
@@ -27,7 +26,7 @@ public class ScrapperJob extends Thread {
 	
 	private void launch() {
 
-		if( this.keywordList != null && this.keywordList.size() > 0 ){
+		if( ScrapperManager.keyWordList != null && ScrapperManager.keyWordList.size() > 0 ){
 			
 			if( this.feedEntryList != null && this.feedEntryList.size() > 0 ){
 				
@@ -35,7 +34,9 @@ public class ScrapperJob extends Thread {
 				
 					for (FeedEntry feedEntry : this.feedEntryList) {
 						
-						if (isContainKeyWord( feedEntry , this.keywordList )) {
+						boolean isContainsKeyWord = isContainKeyWord( feedEntry );
+						boolean isSyntaxAllowed = isSyntaxAllowed( feedEntry );
+						if ( isContainsKeyWord && isSyntaxAllowed ) {
 							
 							// as we have multiple threads, DB access is limited to one thread											
 							synchronized (this) {
@@ -45,11 +46,16 @@ public class ScrapperJob extends Thread {
 					}
 				} else {
 					for (FeedEntry feedEntry : this.feedEntryList) {
-																
-						// as we have multiple threads, DB access is limited to one thread											
-						synchronized (this) {
-							feedEntry.save();
-						}									
+														
+						boolean isSyntaxAllowed = isSyntaxAllowed( feedEntry );						
+						if( isSyntaxAllowed ){
+							
+							// as we have multiple threads, DB access is limited to one thread											
+							synchronized (this) {
+								feedEntry.save();
+							}	
+						}
+														
 					}										
 				}
 				
@@ -65,7 +71,7 @@ public class ScrapperJob extends Thread {
 		
 	}
 		
-	private boolean isContainKeyWord(FeedEntry entry, List<String> keyWordList) {
+	private boolean isContainKeyWord(FeedEntry entry ) {
 
 		try {			
 			URL my_url = new URL(entry.getScrapperUrl());
@@ -74,7 +80,7 @@ public class ScrapperJob extends Thread {
 			String strTemp = "";
 			while (null != (strTemp = br.readLine())) {
 
-				for (String keyword : keyWordList) {
+				for (String keyword : ScrapperManager.keyWordList) {
 					if (strTemp.toUpperCase().contains(keyword.toUpperCase())) {
 						
 						entry.setMatchingKeyword(keyword);
@@ -92,6 +98,17 @@ public class ScrapperJob extends Thread {
 		return false;
 	}
 
+	private boolean isSyntaxAllowed( FeedEntry entry ){
+		
+		for( String allowedSyntax : ScrapperManager.allowedSyntaxList ){
+			
+			if( entry.getSyntax().equalsIgnoreCase( allowedSyntax )){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void downloadPage(String url, String fileName ) {
 
 		System.out.println("Downloading page at : " + url);	
@@ -144,12 +161,6 @@ public class ScrapperJob extends Thread {
 		this.feedEntryList = feedEntryList;
 	}
 
-	public List<String> getKeywordList() {
-		return keywordList;
-	}
 
-	public void setKeywordList(List<String> keywordList) {
-		this.keywordList = keywordList;
-	}
 	
 }

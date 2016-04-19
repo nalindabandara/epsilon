@@ -35,6 +35,8 @@ public class FeedEntry extends SavableObject {
 	
 	private String user;
 	
+	private String syntax;
+	
 	
 
 	
@@ -42,7 +44,9 @@ public class FeedEntry extends SavableObject {
 		
 		this.key = (String) jsonObj.get("key");
 		this.user = (String) jsonObj.get("user");
-		this.scrapperUrl = (String) jsonObj.get("scrape_url");
+		this.scrapperUrl = (String) jsonObj.get("scrape_url");		
+		this.title = (String) jsonObj.get("title");
+		this.syntax = (String) jsonObj.get("syntax");
 		this.status = SavableObject.NEW;
 	}
 	
@@ -103,13 +107,22 @@ public class FeedEntry extends SavableObject {
 	public void setMatchingKeyword(String matchingKeyword) {
 		this.matchingKeyword = matchingKeyword;
 	}
-	
+		
+	public String getSyntax() {
+		return syntax;
+	}
+
+
+	public void setSyntax(String syntax) {
+		this.syntax = syntax;
+	}
+
 
 	@Override
 	public String toString() {
-		return "FeedEntry [scrapperUrl=" + scrapperUrl + ", date=" + date
-				+ ", key=" + key + ", size=" + size + ", title=" + title
-				+ ", user=" + user + "]";
+		return "FeedEntry [Scrapper Url=" + scrapperUrl + ", Key=" + key
+				+ ", Title=" + title + ", Matching Keyword=" + matchingKeyword
+				+ ", Syntax=" + syntax + "]";
 	}
 	
 	

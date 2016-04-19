@@ -1,6 +1,7 @@
 package com.epsilon.LeakHawk.scrapper;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,8 +11,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,16 +28,21 @@ public class ScrapperManager {
 
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
 
-	private static int FEEDS_PER_HIT = 100;
+	private static int FEEDS_PER_HIT = 10;
 	
 	public static boolean isApplyingFilter;
 
+	private static Properties prop = new Properties();
 	
+	public static List<String> keyWordList = null;
+	
+	public static List<String> allowedSyntaxList = null;
 
 	public static void main(String[] args) {
 
-		ScrapperManager manager = new ScrapperManager();
-		manager.execute();
+		readConfigFile();
+		ScrapperManager scrapperManager = new ScrapperManager();
+		scrapperManager.execute();
 	}
 
 	public void execute() {
@@ -49,8 +58,7 @@ public class ScrapperManager {
 		    	setApplyingFilter(true);		    	
 		    } else {
 		    	setApplyingFilter(false);		    	
-		    }
-		    System.out.println( isApplyingFilter());
+		    }		    
 		}
 		catch(IOException e) {
 			e.printStackTrace();
@@ -62,9 +70,6 @@ public class ScrapperManager {
 			System.out.println("*************** Scrapper Started ****************");
 			printDate();
 			long start = System.currentTimeMillis();
-
-			// load keyword list from a file
-			List<String> keyWordList = readKeyWordList("keywords.txt");
 
 			// Scan the web page and extract required url list
 			List<FeedEntry> feedEntryList = performScrapper("http://pastebin.com/api_scraping.php?limit=" + FEEDS_PER_HIT);
@@ -89,8 +94,7 @@ public class ScrapperManager {
 					
 			// Start a separate thread to download the selected pages.
 			ScrapperJob scrapperJob = new ScrapperJob();
-			scrapperJob.setFeedEntryList( newFeedEntryList );	
-			scrapperJob.setKeywordList(keyWordList);
+			scrapperJob.setFeedEntryList( newFeedEntryList );				
 			scrapperJob.start();
 			
 			long end = System.currentTimeMillis();
@@ -161,7 +165,7 @@ public class ScrapperManager {
 			urlObj = new URL( url );
 			String webPageContent = getStringFromInputStream( urlObj.openStream() );
 			
-			System.out.println( webPageContent );
+			//System.out.println( webPageContent );
 			Object obj = parser.parse( webPageContent );
 	        JSONArray array = (JSONArray)obj;
 	        	        
@@ -207,6 +211,35 @@ public class ScrapperManager {
 	}	
 	
 		
+	private static void readConfigFile( ){
+		
+		InputStream input = null;
+		try {
+			System.out.println("************* Reading the configuration file ***************");
+			input = new FileInputStream("config.properties");
+
+			// load a properties file
+			prop.load(input);
+					
+			keyWordList = Arrays.asList( prop.getProperty("keyword.list").split(","));
+			allowedSyntaxList = Arrays.asList( prop.getProperty("allowed.syntax.list").split(","));
+			
+			// get the property value and print it out
+			System.out.println( "Key Word List : " + keyWordList );
+			System.out.println( "Allowed Syntax List : " + allowedSyntaxList );	
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 		
 	/*
 	private List<String> performScrapperEx(String url) {
