@@ -20,7 +20,8 @@ import com.epsilon.LeakHawk.db.SavableObject;
 
 public class FeedEntry extends SavableObject {
 
-
+	private int entryId;
+	
 	private String scrapperUrl;
 	
 	private String date;
@@ -37,8 +38,11 @@ public class FeedEntry extends SavableObject {
 	
 	private String syntax;
 	
+	private InputStream entryStream;
 	
-
+	public FeedEntry(){
+		
+	}
 	
 	public FeedEntry( JSONObject jsonObj ){
 		
@@ -117,6 +121,21 @@ public class FeedEntry extends SavableObject {
 		this.syntax = syntax;
 	}
 
+	public int getEntryId() {
+		return entryId;
+	}
+
+	public void setEntryId(int entryId) {
+		this.entryId = entryId;
+	}
+	
+	public InputStream getEntryStream() {
+		return entryStream;
+	}
+
+	public void setEntryStream(InputStream entryStream) {
+		this.entryStream = entryStream;
+	}
 
 	@Override
 	public String toString() {
@@ -152,7 +171,7 @@ public class FeedEntry extends SavableObject {
 		return true;
 	}
 
-	private InputStream getEntryStream() throws MalformedURLException, IOException{
+	public InputStream _getEntryStream() throws MalformedURLException, IOException{
 		
 		if( this.scrapperUrl != null ){
 			URL urlObj = new URL(scrapperUrl);
@@ -181,7 +200,7 @@ public class FeedEntry extends SavableObject {
             st.setString( ++count, getKey() ); 
             st.setString( ++count, getScrapperUrl() ); 
             st.setString( ++count, getTitle() ); 
-            st.setBlob(++count, getEntryStream());
+            st.setBlob(++count, _getEntryStream());
             st.setString( ++count, getMatchingKeyword() ); 
             st.setString( ++count, getUser() ); 
                         
@@ -214,8 +233,11 @@ public class FeedEntry extends SavableObject {
 	@Override
 	public void loadFromDatabase(Connection con, ResultSet rs)
 			throws SQLException {
-		// TODO Auto-generated method stub
 		
+		this.status = SavableObject.LOADED;
+		this.entryId = rs.getInt("entry_id");
+		this.key = rs.getString("entry_key");
+		this.entryStream = rs.getBinaryStream("entry_file");
 	}
 
 

@@ -14,6 +14,9 @@ CREATE TABLE feed_entry(
    entry_title VARCHAR(500) ,
    entry_file LONGBLOB,
    entry_matchingKeyword VARCHAR(100) ,
-   entry_user VARCHAR(100) ,   
+   entry_user VARCHAR(100) , 
+   entry_processed tinyint(1) DEFAULT 0,
    PRIMARY KEY ( entry_id )
 );
+
+DROP TABLE feed_entry;

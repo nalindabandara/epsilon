@@ -29,7 +29,7 @@ public abstract class SavableObject {
             con = DBConnector.getConnection();
             if( this.status == SavableObject.NEW )
             {
-                dbTransaction = insertToDatabase( con );
+				dbTransaction = insertToDatabase(con);
             }
             if( this.status == SavableObject.MODIFIED )
             {

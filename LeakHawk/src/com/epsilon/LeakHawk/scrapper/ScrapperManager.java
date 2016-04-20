@@ -20,6 +20,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.epsilon.LeakHawk.cluster.ClusterJob;
+
 
 
 //import org.jsoup.nodes.Document;
@@ -28,7 +30,7 @@ public class ScrapperManager {
 
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
 
-	private static int FEEDS_PER_HIT = 10;
+	private static int FEEDS_PER_HIT = 100;
 	
 	public static boolean isApplyingFilter;
 
@@ -67,7 +69,7 @@ public class ScrapperManager {
 		int count = 0;
 		FeedEntry firstElement = null;
 		while (true) {			
-			System.out.println("*************** Scrapper Started ****************");
+			System.out.println("*************** Scrapper Job Started ****************");
 			printDate();
 			long start = System.currentTimeMillis();
 
@@ -75,7 +77,7 @@ public class ScrapperManager {
 			List<FeedEntry> feedEntryList = performScrapper("http://pastebin.com/api_scraping.php?limit=" + FEEDS_PER_HIT);
 			List<FeedEntry> newFeedEntryList = null;
 					
-			printList(feedEntryList);
+			
 			if( count > 0 ){	
 				newFeedEntryList = new ArrayList<FeedEntry>();
 				for( FeedEntry key : feedEntryList ){					
@@ -87,7 +89,8 @@ public class ScrapperManager {
 				}
 				printList(newFeedEntryList);
 				firstElement = newFeedEntryList.get(0);					
-			} else {						
+			} else {	
+				printList(feedEntryList);
 				firstElement = feedEntryList.get(0);
 				newFeedEntryList = feedEntryList;
 			}
@@ -97,10 +100,13 @@ public class ScrapperManager {
 			scrapperJob.setFeedEntryList( newFeedEntryList );				
 			scrapperJob.start();
 			
-			long end = System.currentTimeMillis();
-
-			System.out.println("*************** Scrapper Stopped ****************\n");
+			if( count == 0 ){
+				System.out.println("****************** Custer Job Started *******************");
+				ClusterJob clusterJob = new ClusterJob();
+				clusterJob.start();
+			}
 			
+			long end = System.currentTimeMillis();				
 			long timeTakenToProcess = (end - start);
 			System.out.println("Time taken for the scrapper process : " + timeTakenToProcess + " ms");
 
@@ -119,7 +125,7 @@ public class ScrapperManager {
 		for( FeedEntry ls : lst ){
 			System.out.println(ls.toString());
 		}
-		System.out.println("Size of the length : " + lst.size());
+		System.out.println("Number of entries retrived  : " + lst.size());
 	}
 	
 	private static void printDate(){

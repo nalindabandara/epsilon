@@ -7,9 +7,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.epsilon.LeakHawk.db.DBConnector;
+import com.epsilon.LeakHawk.db.DBManager;
 
 
 public class ScrapperJob extends Thread {
@@ -18,6 +20,7 @@ public class ScrapperJob extends Thread {
 	
 	private List<FeedEntry> feedEntryList;
 	
+	private List<FeedEntry> eligibleEntryList = new ArrayList<FeedEntry>();
 		
 	public void run(){
 		
@@ -30,35 +33,34 @@ public class ScrapperJob extends Thread {
 			
 			if( this.feedEntryList != null && this.feedEntryList.size() > 0 ){
 				
+				DBManager dbManager = new DBManager();
 				if( ScrapperManager.isApplyingFilter ){
 				
+					eligibleEntryList.clear();
 					for (FeedEntry feedEntry : this.feedEntryList) {
 						
 						boolean isContainsKeyWord = isContainKeyWord( feedEntry );
 						boolean isSyntaxAllowed = isSyntaxAllowed( feedEntry );
-						if ( isContainsKeyWord && isSyntaxAllowed ) {
-							
-							// as we have multiple threads, DB access is limited to one thread											
-							synchronized (this) {
-								feedEntry.save();
-							}
+						
+						if ( isContainsKeyWord && isSyntaxAllowed ) {							
+							eligibleEntryList.add( feedEntry );							
 						}				
 					}
-				} else {
+					
+				} else { 
+					
+					eligibleEntryList.clear();
 					for (FeedEntry feedEntry : this.feedEntryList) {
 														
 						boolean isSyntaxAllowed = isSyntaxAllowed( feedEntry );						
 						if( isSyntaxAllowed ){
 							
-							// as we have multiple threads, DB access is limited to one thread											
-							synchronized (this) {
-								feedEntry.save();
-							}	
-						}
-														
-					}										
+							eligibleEntryList.add( feedEntry );		
+						}														
+					}							
 				}
-				
+				dbManager.saveFeedEntryBatch( eligibleEntryList);
+				System.out.println("Number of entries saved as a batch : " + eligibleEntryList.size() );
 				
 			} else {
 				System.out.println( "****************** No urls were found for the scrapper job ******************");
@@ -66,7 +68,7 @@ public class ScrapperJob extends Thread {
 		} else {			
 			System.out.println( "****************** No keywords were found for the scrapper job ******************");
 		}
-		
+		System.out.println("*************** Scrapper Job Stopped ****************\n\n");
 
 		
 	}
