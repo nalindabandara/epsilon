@@ -20,7 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.epsilon.LeakHawk.cluster.ClusterJob;
+import com.epsilon.LeakHawk.feature.extraction.FeatureExtractionJob;
 
 
 
@@ -30,7 +30,7 @@ public class ScrapperManager {
 
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
 
-	private static int FEEDS_PER_HIT = 100;
+	private static int FEEDS_PER_HIT = 10;
 	
 	public static boolean isApplyingFilter;
 
@@ -102,7 +102,7 @@ public class ScrapperManager {
 			
 			if( count == 0 ){
 				System.out.println("****************** Custer Job Started *******************");
-				ClusterJob clusterJob = new ClusterJob();
+				FeatureExtractionJob clusterJob = new FeatureExtractionJob();
 				clusterJob.start();
 			}
 			

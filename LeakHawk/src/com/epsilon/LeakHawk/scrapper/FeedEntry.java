@@ -40,6 +40,8 @@ public class FeedEntry extends SavableObject {
 	
 	private InputStream entryStream;
 	
+	private String entryFileName;
+	
 	public FeedEntry(){
 		
 	}
@@ -135,6 +137,15 @@ public class FeedEntry extends SavableObject {
 
 	public void setEntryStream(InputStream entryStream) {
 		this.entryStream = entryStream;
+	}
+		
+
+	public String getEntryFileName() {
+		return entryFileName;
+	}
+
+	public void setEntryFileName(String entryFileName) {
+		this.entryFileName = entryFileName;
 	}
 
 	@Override

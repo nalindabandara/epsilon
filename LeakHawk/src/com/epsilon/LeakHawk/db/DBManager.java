@@ -48,7 +48,7 @@ public class DBManager {
 		}
 	}
 	
-	private void insertFeedEntryBatch( FeedEntry feedEntry, PreparedStatement statement){
+	private void insertFeedEntryBatch( FeedEntry feedEntry, PreparedStatement statement) throws MalformedURLException, IOException{
 		
 		 int count = 0;           
          
@@ -56,7 +56,7 @@ public class DBManager {
 			 statement.setString( ++count, feedEntry.getKey() );
 			 statement.setString( ++count, feedEntry.getScrapperUrl() ); 
 			 statement.setString( ++count, feedEntry.getTitle() ); 
-			 statement.setBlob(++count, feedEntry.getEntryStream());
+			 statement.setBlob(++count, feedEntry._getEntryStream());
 			 statement.setString( ++count, feedEntry.getMatchingKeyword() ); 
 			 statement.setString( ++count, feedEntry.getUser() ); 
 			 statement.addBatch();
