@@ -148,7 +148,7 @@ public class FeedEntry extends SavableObject {
 		this.entryFileName = entryFileName;
 	}
 
-	@Override
+	@Override 
 	public String toString() {
 		return "FeedEntry [Scrapper Url=" + scrapperUrl + ", Key=" + key
 				+ ", Title=" + title + ", Matching Keyword=" + matchingKeyword

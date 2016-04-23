@@ -30,7 +30,7 @@ public class ScrapperManager {
 
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
 
-	private static int FEEDS_PER_HIT = 10;
+	private static int FEEDS_PER_HIT = 100;
 	
 	public static boolean isApplyingFilter;
 

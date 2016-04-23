@@ -76,12 +76,13 @@ public class FeatureExtractionJob extends Thread {
 			if( entry.getTitle() != null ) {
 				fileName = fileName.concat( entry.getTitle() );
 			}
-			
+			System.out.println("file name:" + fileName );
+			System.out.println("title:" + entry.getTitle());
 			entry.setEntryFileName(fileName);
 						
 		    reader = new BufferedReader(new InputStreamReader(
 					entry.getEntryStream()));
-		    File file = new File( fileName );
+		    File file = new File( "/home/nalinda/LeakHawk-files/", fileName );
 		    writer = new BufferedWriter(new FileWriter(file));
 			String line;
 			while ((line = reader.readLine()) != null) {
