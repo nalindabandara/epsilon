@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include<string.h>
+#define max 52
+#define max2 5
+void main() {
+	char a[max2][max2], slova[max];
+	int i,j;
+	for ( i = 0; i < 26; i++)
+			slova[i]= rand() % (91 - 65) + 65;
+	for (; i < 52; i++)
+		slova[i] = rand() % (122 - 97) + 97;
+
+	for (i = 0; i < 5; i++)
+		for (j = 0; j < 5; j++)
+		{
+			a[i][j]= slova[rand() % (54 - 0)];
+		}
+
+	for (i = 0; i < 5; i++)
+	{
+
+	}
+
+
+	for (i = 0; i < 5; i++) {
+		for (j = 0; j < 5; j++)
+		{
+			printf("%c ", a[i][j]);
+		}
+		printf("\n");
+	}
+	
+	
+	scanf("%c", a[1]);
+
+}

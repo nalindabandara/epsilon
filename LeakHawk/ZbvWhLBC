@@ -1,0 +1,95 @@
+package KUI;
+
+import java.util.LinkedList;
+
+public class Bayes extends Classifier {
+
+    LinkedList<Character> labelsMem = new LinkedList<Character>();
+    LinkedList<Double> probability = new LinkedList<Double>();
+    double zeroCorrector = 0.01;
+    int blackColor = 127;
+
+    @Override
+    public void learn(double[][] data, char[] labels) {
+        
+        char currentChar = labels[0]; 
+        labelsMem.add(labels[0]); 
+
+        double blackPixels[] = new double[24];
+        double pixels[] = new double[24];
+
+        int index = 0;
+        for (int i = 0; i < data.length; i++) {
+            if (currentChar != labels[i]) {
+                currentChar = labels[i];
+                labelsMem.add(labels[i]);
+                probability.add(blackPixels[index] / pixels[index]);
+                if (probability.get(index) == 0) {
+                    probability.add(index,zeroCorrector);
+                }
+                index++;
+            }
+            for (int j = 0; j < data[i].length; j++) {
+                if (data[i][j] <= blackColor) {
+                    blackPixels[index]++;
+                }
+                pixels[index]++;
+            }
+
+        }
+        probability.add(blackPixels[index]/pixels[index]);
+    }
+
+    private int findMax(double[] scores) {
+        double maxG = -Double.MAX_VALUE;
+        int charId = 0;
+
+        for (int i = 0; i < scores.length; i++) {
+            double g = scores[i];
+            if (g > maxG) {
+                maxG = g;
+                charId = i;
+            }
+        }
+
+        return charId;
+    }
+
+    public int classify(double[] data) {
+        double[] scores = new double[labelsMem.size()];
+        int index;
+        for (int j = 0; j < data.length; j++) {
+            for (int i = 0; i < labelsMem.size(); i++) {
+                if (data[j] <= blackColor) {
+                    if (scores[i] == 0) {
+                        scores[i] = probability.get(i);
+                    } else {
+                        scores[i] = scores[i] * probability.get(i);
+                    }
+                } else {
+                    if (scores[i] == 0) {
+                        scores[i] = 1 - probability.get(i);
+                    } else {
+                        scores[i] = scores[i] * (1 - probability.get(i));
+                    }
+
+                }
+
+            }
+        }
+
+        index = findMax(scores);
+        return index;
+    }
+
+    @Override
+    public char[] classify(double[][] data) { 
+        char[] returnVal = new char[data.length];
+        for (int i = 0; i < data.length; i++) {
+            int index = classify(data[i]);
+            returnVal[i] = labelsMem.get(index);
+        }
+        return returnVal;
+    }
+
+}

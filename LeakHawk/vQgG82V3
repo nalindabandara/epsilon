@@ -1,0 +1,2 @@
+format(as.POSIXct(df$datetime, format="%Y-%m-%d %H:%M:%S"), format="%H:%M:%S")
+#[1] "04:10:45"

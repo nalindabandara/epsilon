@@ -1,0 +1,90 @@
+F2::	; Starts the bot
+#noenv
+WinGet, ID, PID, A
+SPa = 0x0083E1BC
+NK = 3
+
+start:
+Loop
+{
+sleep 1000
+MouseMove, 829, 308	; Healer Location
+sleep 1000
+Click					; Clicks on the Healer
+sleep 1000
+send {F1}				; Attention Concentrate of the Hunter/Sniper 
+sleep 1000
+Click					; Clicks on the Healer again
+sleep 1000
+MouseMove, 509, 277		; Warper Location
+sleep 1000
+Click					; Clicks the Warper
+sleep 1000
+send {Enter}			; Only works with Last Warp function.
+sleep 1000
+send {Enter}
+	Loop
+	{
+			Loop
+			{
+			SP := GetVar(SPa,ID,4)
+			if SP < NK*12
+			{
+				sleep 1500
+				send !{3}	; alt+3 = @go [town]
+				sleep 2500
+				Goto, start
+			}
+			WinActivate
+			PixelSearch, x, y, 230, 70, 1400, 880, 0x8C94FF, 3, Fast
+				if ErrorLevel = 1
+				{
+					mid:
+					send {F5}	; F5 = Teleport
+					sleep 1000
+				}
+					else if ErrorLevel = 0
+					{
+						SPb := GetVar(SPa,ID,4)
+						MouseMove, %x%, %y%
+						send {F4}	; F4 = Double Strafe
+						Click
+						sleep 450	
+						SPl := GetVar(SPa,ID,4)	
+						if SPl=SPb
+						{
+							Goto, mid
+						}
+					}
+			}
+	}
+}
+
+GetVar(ReadAddress,ID,Size)
+{
+	PID := DllCall("GetCurrentProcessId")
+	ReadAddress := ReadAddress
+	ReadSize := Size
+	VarSetCapacity(Buf, ReadSize, 0)
+	PROCESS_VM_READ = 0x10
+
+	PID := ID
+
+	hProcess := DllCall("OpenProcess", UInt, PROCESS_VM_READ
+                                 , Int, False
+                                 , UInt, PID)
+
+	Ret := DllCall("ReadProcessMemory", UInt, hProcess
+                                  , UInt, ReadAddress
+                                  , UInt, &Buf
+                                  , UInt, ReadSize
+                                  , UInt, 0)
+
+	DllCall("CloseHandle", UInt, hProcess)
+
+	return NumGet(Buf, 0, "UInt")
+
+}
+
+#Del::ExitApp
+F3::Pause	; Pauses the bot

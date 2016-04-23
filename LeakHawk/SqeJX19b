@@ -1,0 +1,373 @@
+{include file='documentHeader'}
+
+<head>
+<title>{$thread->topic} {if $pageNo > 1}- {lang}wcf.page.pageNo{/lang} {/if} - {$board->title|language} - {PAGE_TITLE|language}</title>
+
+{include file='headInclude'}
+
+{if $pageNo < $pages}
+<link  href="{link application='wbb' controller='Thread' object=$thread}pageNo={@$pageNo+1}{/link}" />
+{/if}
+{if $pageNo > 1}
+<link rel="prev" href="{link application='wbb' controller='Thread' object=$thread}{if $pageNo > 2}pageNo={@$pageNo-1}{/if}{/link}" />
+{/if}
+<link rel="canonical" href="{link application='wbb' controller='Thread' object=$thread}{if $pageNo > 1}pageNo={@$pageNo}{/if}{/link}" />
+
+<script data-relocate="true" src="{@$__wcf->getPath()}js/WCF.Infraction{if !ENABLE_DEBUG_MODE}.min{/if}.js?v={@LAST_UPDATE_TIME}"></script>
+<script data-relocate="true">
+//<![CDATA[
+$(function() {
+WCF.Language.addObject({
+'wbb.post.closed': '{lang}wbb.post.closed{/lang}',
+'wbb.post.copy.title': '{lang}wbb.post.copy.title{/lang}',
+'wbb.post.edit': '{lang}wbb.post.edit{/lang}',
+'wbb.post.edit.close': '{lang}wbb.post.edit.close{/lang}',
+'wbb.post.edit.delete': '{lang}wbb.post.edit.trash{/lang}',
+'wbb.post.edit.delete.confirmMessage': '{lang}wbb.post.edit.delete.confirmMessage{/lang}',
+'wbb.post.edit.deleteCompletely': '{lang}wbb.post.edit.delete{/lang}',
+'wbb.post.edit.enable': '{lang}wbb.post.edit.enable{/lang}',
+'wbb.post.edit.disable': '{lang}wbb.post.edit.disable{/lang}',
+'wbb.post.edit.merge': '{lang}wbb.post.edit.merge{/lang}',
+'wbb.post.edit.merge.success': '{lang}wbb.post.edit.merge.success{/lang}',
+'wbb.post.edit.open': '{lang}wbb.post.edit.open{/lang}',
+'wbb.post.edit.restore': '{lang}wbb.post.edit.restore{/lang}',
+'wbb.post.edit.trash.confirmMessage': '{lang}wbb.post.edit.trash.confirmMessage{/lang}',
+'wbb.post.edit.trash.reason': '{lang}wbb.post.edit.trash.reason{/lang}',
+'wbb.post.ipAddress.title': '{lang}wbb.post.ipAddress.title{/lang}',
+'wbb.post.moderation.redirect': '{lang}wbb.post.moderation.redirect{/lang}',
+'wbb.post.moveToNewThread': '{lang}wbb.post.moveToNewThread{/lang}',
+'wbb.thread.closed': '{lang}wbb.thread.closed{/lang}',
+'wbb.thread.confirmDelete': '{lang}wbb.thread.confirmDelete{/lang}',
+'wbb.thread.confirmTrash': '{lang}wbb.thread.confirmTrash{/lang}',
+'wbb.thread.confirmTrash.reason': '{lang}wbb.thread.confirmTrash.reason{/lang}',
+'wbb.thread.edit.advanced': '{lang}wbb.thread.edit.advanced{/lang}',
+'wbb.thread.edit.close': '{lang}wbb.thread.edit.close{/lang}',
+'wbb.thread.edit.delete': '{lang}wbb.thread.edit.delete{/lang}',
+'wbb.thread.edit.done': '{lang}wbb.thread.edit.done{/lang}',
+'wbb.thread.edit.enable': '{lang}wbb.thread.edit.enable{/lang}',
+'wbb.thread.edit.disable': '{lang}wbb.thread.edit.disable{/lang}',
+'wbb.thread.edit.move': '{lang}wbb.thread.edit.move{/lang}',
+'wbb.thread.edit.moveDestination.error.equalsOrigin': '{lang}wbb.thread.edit.moveDestination.error.equalsOrigin{/lang}',
+'wbb.thread.edit.open': '{lang}wbb.thread.edit.open{/lang}',
+'wbb.thread.edit.removeLink': '{lang}wbb.thread.edit.removeLink{/lang}',
+'wbb.thread.edit.restore': '{lang}wbb.thread.edit.restore{/lang}',
+'wbb.thread.edit.scrape': '{lang}wbb.thread.edit.scrape{/lang}',
+'wbb.thread.edit.sticky': '{lang}wbb.thread.edit.sticky{/lang}',
+'wbb.thread.edit.trash': '{lang}wbb.thread.edit.trash{/lang}',
+'wbb.thread.edit.undone': '{lang}wbb.thread.edit.undone{/lang}',
+'wbb.thread.moved': '{lang}wbb.thread.moved{/lang}',
+'wbb.thread.newPosts': '{lang}wbb.thread.newPosts{/lang}',
+'wbb.thread.sticky': '{lang}wbb.thread.sticky{/lang}',
+'wcf.global.worker.completed': '{lang}wcf.global.worker.completed{/lang}',
+'wcf.user.objectWatch.manageSubscription': '{lang}wcf.user.objectWatch.manageSubscription{/lang}',
+'wcf.message.bbcode.code.copy': '{lang}wcf.message.bbcode.code.copy{/lang}',
+'wcf.message.error.editorAlreadyInUse': '{lang}wcf.message.error.editorAlreadyInUse{/lang}',
+'wcf.message.share': '{lang}wcf.message.share{/lang}',
+'wcf.message.share.permalink': '{lang}wcf.message.share.permalink{/lang}',
+'wcf.message.share.permalink.bbcode': '{lang}wcf.message.share.permalink.bbcode{/lang}',
+'wcf.message.share.permalink.html': '{lang}wcf.message.share.permalink.html{/lang}',
+'wcf.moderation.report.reportContent': '{lang}wcf.moderation.report.reportContent{/lang}',
+'wcf.moderation.report.success': '{lang}wcf.moderation.report.success{/lang}',
+'wcf.infraction.warn': '{lang}wcf.infraction.warn{/lang}',
+'wcf.infraction.warn.success': '{lang}wcf.infraction.warn.success{/lang}',
+'wbb.thread.edit.moveThreads': '{lang}wbb.thread.edit.moveThreads{/lang}',
+'wbb.thread.edit': '{lang}wbb.thread.edit{/lang}',
+'wcf.label.none': '{lang}wcf.label.none{/lang}',
+'wbb.thread.done': '{lang}wbb.thread.done{/lang}',
+'wbb.thread.undone': '{lang}wbb.thread.undone{/lang}'
+});
+
+{if $__wcf->user->userID && $thread->canReply()}
+{assign var='supportPaste' value=true}
+{else}
+{assign var='supportPaste' value=false}
+{/if}
+{include file='__messageQuoteManager' wysiwygSelector='text'}
+new WBB.Post.QuoteHandler($quoteManager);
+
+var $collapsedPostLoader = null;
+{if $board->getModeratorPermission('canReadDeletedPost')}
+$collapsedPostLoader = new WBB.Post.CollapsedPostLoader('.wbbPostDeleted');
+{/if}
+
+{if MODULE_LIKE && $__wcf->getSession()->getPermission('user.like.canViewLike')}new WBB.Post.Like({if $__wcf->getUser()->userID && $board->getPermission('canLikePost')}1{else}0{/if}, {@LIKE_ENABLE_DISLIKE}, {@LIKE_SHOW_SUMMARY}, {@LIKE_ALLOW_FOR_OWN_CONTENT});{/if}
+{if $__wcf->user->userID}
+var $postHandler = new WBB.Post.Handler('.wbbPost');
+new WBB.Post.InlineEditor({@$thread->threadID}, $postHandler, $quoteManager);
+$('.jsDeletePost').click(function () {
+var post = $(this);
+var $template = $('<fieldset><dl></dl></fieldset>');
+$('<dt><label for="postTrashReason">' + WCF.Language.get('wbb.post.edit.trash.reason') + '</label></dt>').appendTo($template.children('dl'));
+$('<dd><textarea id="postTrashReason" name="reason" cols="40" rows="3" /></dd>').appendTo($template.children('dl'));
+WCF.System.Confirmation.show(WCF.Language.get('wbb.post.edit.trash.confirmMessage'), $.proxy(function (action) {
+if (action === 'confirm') {
+$postHandler.update(post.data('postID'), 'trash', { reason: $('#postTrashReason').val() }, function() { new WCF.System.Notification().show(); });
+}
+}, this), '', $template);
+});
+
+var $updateHandler = new WBB.Thread.UpdateHandler.Thread({@$board->boardID});
+$postHandler.setThreadUpdateHandler($updateHandler);
+$updateHandler.setPostHandler($postHandler);
+{if WBB_MODULE_THREAD_MARKING_AS_DONE && $board->enableMarkingAsDone}
+new WBB.Thread.MarkAsDone($updateHandler);
+{/if}
+
+{if $thread->canEdit()}
+var $inlineEditor = new WBB.Thread.InlineEditor('.jsThreadInlineEditorContainer');
+$inlineEditor.setUpdateHandler($updateHandler);
+$inlineEditor.setEnvironment('thread', {@$board->boardID});
+$inlineEditor.setPermissions({
+canCloseThread: {@$board->getModeratorPermission('canCloseThread')},
+canDeleteThread: {@$board->getModeratorPermission('canDeleteThread')},
+canDeleteThreadCompletely: {@$board->getModeratorPermission('canDeleteThreadCompletely')},
+canEnableThread: {@$board->getModeratorPermission('canEnableThread')},
+canMoveThread: {@$board->getModeratorPermission('canMoveThread')},
+canPinThread: {@$board->getModeratorPermission('canPinThread')},
+canRestoreThread: {@$board->getModeratorPermission('canRestoreThread')}
+});
+{/if}
+
+{if $board->canEditThreads() || $thread->getBoard()->getModeratorPermission('canClosePost') || $thread->getBoard()->getModeratorPermission('canDeletePost') || $thread->getBoard()->getModeratorPermission('canDeletePostCompletely') || $thread->getBoard()->getModeratorPermission('canEnablePost') || $thread->getBoard()->getModeratorPermission('canRestorePost')}
+{assign var='canEditPostInline' value=true}
+var $postClipboardHandler = new WBB.Post.Clipboard($postHandler);
+$postClipboardHandler.setThreadUpdateHandler($updateHandler);
+$('.jsDeleteThread').click(function () {
+var self = $this;
+WCF.System.Confirmation.show(WCF.Language.get('wbb.thread.confirmTrash'), function(action) {
+if (action === 'confirm') {
+$inlineEditor._updateThread(elementID, "trash", { isDeleted: 1, reason: $('#wcfSystemConfirmationContent').find('textarea').val() });
+}
+}, { }, $('<fieldset><dl><dt>' + WCF.Language.get('wbb.thread.confirmTrash.reason') + '</dt><dd><textarea cols="40" rows="4" /></dd></dl></fieldset>'));
+});
+});
+{else}
+{assign var='canEditPostInline' value=false}
+{/if}
+{/if}
+
+{if $isLastPage && $sortOrder == 'ASC'}new WBB.Thread.LastPageHandler({@$thread->threadID}, {@$objects->getMaxPostTime()}, {@$pageNo});{/if}
+
+{if LOG_IP_ADDRESS && $__wcf->session->getPermission('admin.user.canViewIpAddress')}new WBB.Post.IPAddressHandler();{/if}
+
+{if $__wcf->getUser()->userID && $thread->canReply()}new WBB.Thread.QuickReply($quoteManager);{/if}
+
+WCF.Clipboard.init('wbb\\page\\ThreadPage', {@$hasMarkedItems}, { }, {$thread->threadID});
+
+{if $__wcf->session->getPermission('user.profile.canReportContent')}
+new WCF.Moderation.Report.Content('com.woltlab.wbb.post', '.jsReportPost');
+{/if}
+
+{if MODULE_USER_INFRACTION && $__wcf->session->getPermission('mod.infraction.warning.canWarn')}
+new WCF.Infraction.Warning.Content('com.woltlab.wbb.warnablePost', '.jsWarnPost');
+{/if}
+
+new WCF.User.ObjectWatch.Subscribe();
+new WCF.Message.Share.Content();
+new WCF.Message.BBCode.CodeViewer();
+});
+//]]>
+</script>
+</head>
+
+<body id="tpl{$templateName|ucfirst}" data-template="{$templateName}" data-application="{$templateNameApplication}">
+
+{capture assign='headerNavigation'}
+{if $__wcf->user->userID}
+<li class="jsOnly"><a href="#" title="{lang}wcf.user.objectWatch.manageSubscription{/lang}" class="jsSubscribeButton jsTooltip" data-object-type="com.woltlab.wbb.thread" data-object-id="{@$thread->threadID}" data-is-subscribed="{if $thread->isSubscribed()}true{else}false{/if}"><span class="icon icon16 icon-bookmark{if !$thread->isSubscribed()}-empty{/if}"></span> <span class="invisible">{lang}wcf.user.objectWatch.manageSubscription{/lang}</span></a></li>
+{/if}
+{if $board->canEditThreads()}
+<li><a href="{link application='wbb' controller='ThreadLog' id=$thread->threadID}{/link}" title="{lang}wbb.thread.log{/lang}" class="jsTooltip"><span class="icon icon16 icon-tasks"></span> <span class="invisible">{lang}wbb.thread.log{/lang}</span></a></li>
+{/if}
+{/capture}
+
+{include file='header'}
+
+<header class="boxHeadline marginTop wbbThread labeledHeadline" data-thread-id="{@$thread->threadID}"{if $thread->canEdit()} data-is-closed="{@$thread->isClosed}" data-is-deleted="{@$thread->isDeleted}" data-is-disabled="{@$thread->isDisabled}" data-is-sticky="{@$thread->isSticky}" data-is-announcement="{@$thread->isAnnouncement}"{/if}{if WBB_MODULE_THREAD_MARKING_AS_DONE && $board->enableMarkingAsDone} data-is-done="{@$thread->isDone}" data-can-mark-as-done="{if $thread->canMarkAsDone()}1{else}0{/if}"{/if} data-is-link="{if $thread->movedThreadID}1{else}0{/if}">
+<h1>
+{if $thread->isSticky}<span class="badge label jsSticky">{lang}wbb.thread.sticky{/lang}</span>{/if}
+{if $thread->isAnnouncement}<span class="badge badgeUpdate label jsIconAnnouncement">{lang}wbb.thread.announcement{/lang}</span>{/if}
+{event name='topicBadges'}
+<a href="{link application='wbb' controller='Thread' object=$thread}{/link}">{$thread->topic}</a>
+</h1>
+
+{hascontent}
+<ul class="statusIcons">
+{content}
+{if $thread->isClosed}<li><span class="icon icon16 icon-lock jsTooltip jsIconClosed" title="{lang}wbb.thread.closed{/lang}"></span></li>{/if}
+{if WBB_MODULE_THREAD_MARKING_AS_DONE && $board->enableMarkingAsDone}
+{if $thread->isDone}
+<li><span id="threadMarking{@$thread->threadID}" class="icon icon16 icon-check jsTooltip jsIconDone wbbMarkAsDone" title="{lang}wbb.thread.done{/lang}"></span></li>
+{else}
+<li><span id="threadMarking{@$thread->threadID}" class="icon icon16 icon-check-empty jsTooltip jsIconUndone wbbMarkAsDone" title="{lang}wbb.thread.undone{/lang}"></span></li>
+{/if}
+{/if}
+{/content}
+</ul>
+{hascontentelse}
+<ul class="statusIcons"></ul>
+{/hascontent}
+
+{if $thread->hasLabels()}
+<ul class="labelList">
+{foreach from=$thread->getLabels() item=label}
+<li><span class="label badge{if $label->getClassNames()} {$label->getClassNames()}{/if}">{lang}{$label->label}{/lang}</span></li>
+{/foreach}
+</ul>
+{/if}
+
+{event name='headlineData'}
+</header>
+
+{include file='userNotice'}
+
+{event name='afterUserNotice'}
+
+{if $thread->isDisabled && !$board->getModeratorPermission('canEnableThread')}
+<p class="info">{lang}wbb.thread.moderation.disabledThread{/lang}</p>
+{/if}
+
+<div class="contentNavigation">
+{pages print=true assign=pagesLinks application='wbb' controller='Thread' object=$thread link="pageNo=%d"}
+
+<nav>
+<ul class="jsThreadInlineEditorContainer" data-thread-id="{@$thread->threadID}" data-is-closed="{@$thread->isClosed}" data-is-sticky="{@$thread->isSticky}" data-is-disabled="{@$thread->isDisabled}">
+{if $thread->canEdit()}<li><a href="#" class="button jsThreadInlineEditor jsOnly"><span class="icon icon16 icon-pencil"></span> <span>{lang}wbb.thread.edit{/lang}</span></a></li>{/if}
+{if $board->canStartThread()}<li class="wbbThreadAddButton"><a href="{link application='wbb' controller='ThreadAdd' id=$thread->boardID}{/link}" title="{lang}wbb.thread.add{/lang}" class="button"><span class="icon icon16 icon-asterisk"></span> <span>{lang}wbb.thread.button.add{/lang}</span></a></li>{/if}
+{if $thread->canReply()}<li class="wbbPostAddButton"><a href="{link application='wbb' controller='PostAdd' id=$threadID}{/link}" title="{lang}wbb.post.add{/lang}" class="button buttonPrimary jsQuickReply"><span class="icon icon16 icon-plus"></span> <span>{lang}wbb.post.button.add{/lang}</span></a></li>{/if}
+{event name='contentNavigationButtonsTop'}
+</ul>
+</nav>
+</div>
+
+<div class="marginTop">
+<ul class="wbbThreadPostList messageList jsClipboardContainer" data-type="com.woltlab.wbb.post">
+{if $sortOrder == 'DESC' && $thread->canReply()}
+{assign var='tmpAttachmentList' value=$attachmentList}
+{include file='threadQuickReply' application='wbb'}
+{assign var='attachmentList' value=$tmpAttachmentList}
+{/if}
+{if $sortOrder == 'DESC'}{assign var=startIndex value=$items-$startIndex+1}{/if}
+{include file='threadPostList' application='wbb'}
+{if $sortOrder == 'ASC' && $thread->canReply()}{include file='threadQuickReply' application='wbb'}{/if}
+</ul>
+</div>
+
+<div class="contentNavigation">
+{@$pagesLinks}
+
+{hascontent}
+<nav>
+<ul>
+{content}
+{if $thread->canEdit()}<li><a href="#" class="button jsThreadInlineEditor jsOnly"><span class="icon icon16 icon-pencil"></span> <span>{lang}wbb.thread.edit{/lang}</span></a></li>{/if}
+{if $board->canStartThread()}<li class="wbbThreadAddButton"><a href="{link application='wbb' controller='ThreadAdd' id=$thread->boardID}{/link}" title="{lang}wbb.thread.add{/lang}" class="button"><span class="icon icon16 icon-asterisk"></span> <span>{lang}wbb.thread.button.add{/lang}</span></a></li>{/if}
+{if $thread->canReply()}<li class="wbbPostAddButton"><a href="{link application='wbb' controller='PostAdd' id=$threadID}{/link}" title="{lang}wbb.post.add{/lang}" class="button buttonPrimary jsQuickReply"><span class="icon icon16 icon-plus"></span> <span>{lang}wbb.post.button.add{/lang}</span></a></li>{/if}
+{event name='contentNavigationButtonsBottom'}
+{/content}
+</ul>
+</nav>
+{/hascontent}
+
+<nav class="jsClipboardEditor" data-types="[ 'com.woltlab.wbb.post' ]"></nav>
+</div>
+
+{hascontent}
+<div class="container marginTop">
+<ul class="containerList infoBoxList">
+{content}
+{if ENABLE_SHARE_BUTTONS}
+<li class="box32 jsOnly shareInfoBox">
+<span class="icon icon32 icon-link"></span>
+
+<div>
+<div class="containerHeadline">
+<h3>{lang}wcf.message.share{/lang}</h3>
+</div>
+
+{include file='shareButtons'}
+</div>
+</li>
+{/if}
+
+{if MODULE_USERS_ONLINE && WBB_THREAD_ENABLE_ONLINE_LIST && $__wcf->session->getPermission('user.profile.canViewUsersOnlineList') && $usersOnlineList->stats[total]}
+<li class="box32 usersOnlineInfoBox">
+<span class="icon icon32 icon-user"></span>
+
+<div>
+<div class="containerHeadline">
+<h3>{lang}wcf.user.usersOnline{/lang} <span class="badge">{#$usersOnlineList->stats[total]}</span></h3>
+<p>{lang}wcf.user.usersOnline.detail{/lang}</p>
+</div>
+
+<ul class="dataList">
+{foreach from=$usersOnlineList->getObjects() item=userOnline}
+<li><a href="{link controller='User' object=$userOnline->getDecoratedObject()}{/link}" class="userLink" data-user-id="{@$userOnline->userID}">{@$userOnline->getFormattedUsername()}</a></li>
+{/foreach}
+</ul>
+</div>
+</li>
+{/if}
+
+{if $tags|count}
+<li class="box32 tagsInfoBox">
+<span class="icon icon32 icon-tags"></span>
+
+<div>
+<div class="containerHeadline">
+<h3>{lang}wcf.tagging.tags{/lang}</h3>
+</div>
+
+<ul class="tagList">
+{foreach from=$tags item=tag}
+<li><a href="{link controller='Tagged' object=$tag}objectType=com.woltlab.wbb.thread{/link}" class="badge tag jsTooltip" title="{lang}wcf.tagging.taggedObjects.com.woltlab.wbb.thread{/lang}">{$tag->name}</a></li>
+{/foreach}
+</ul>
+</div>
+</li>
+{/if}
+
+{if $similarThreadList && $similarThreadList->getObjects()|count}
+<li class="box32 wbbSimilarThreadList">
+<span class="icon icon32 icon-info-sign"></span>
+
+<div>
+<div class="containerHeadline">
+<h3>{lang}wbb.thread.similarThreads{/lang}</h3>
+</div>
+
+<ul class="containerBoxList tripleColumned">
+{foreach from=$similarThreadList item=similarThread}
+<li>
+<div class="box48">
+<a href="{link application='wbb' controller='Thread' object=$similarThread}{/link}" title="{@$similarThread->username}" class="framed">{@$similarThread->getUserProfile()->getAvatar()->getImageTag(48)}</a>
+
+<div>
+<p>
+<a href="{link application='wbb' controller='Thread' object=$similarThread}{/link}" {if $similarThread->getBoard()->getPermission('canReadThread')} class="wbbTopicLink"{/if} data-thread-id="{@$similarThread->threadID}">{$similarThread->topic}</a>
+</p>
+<p><small>
+{if $similarThread->userID}<a href="{link controller='User' object=$similarThread->getUserProfile()}{/link}" class="userLink" data-user-id="{@$similarThread->userID}">{$similarThread->username}</a>{else}{$similarThread->username}{/if}
+- {@$similarThread->time|time}
+</small></p>
+<p><small>
+<a href="{link application='wbb' controller='Board' object=$similarThread->getBoard()}{/link}">{$similarThread->getBoard()->title|language}</a>
+</small></p>
+</div>
+</div>
+</li>
+{/foreach}
+</ul>
+</div>
+</li>
+{/if}
+
+{event name='infoBoxes'}
+{/content}
+</ul>
+</div>
+{/hascontent}
+
+{include file='footer'}
+</body>
+</html>

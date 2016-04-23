@@ -1,0 +1,3 @@
+<a class='Like'>{{Auth::user()->likes()->where('post_id',$post->id)->first()
+?Auth::user()->likes()->where('post_id',$post->id)->first()->like == 1 ? '#liked#' 
+ :'Like'}}</a>

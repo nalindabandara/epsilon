@@ -1,0 +1,67 @@
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+
+void afisare_fisier(const char[]);
+
+int main()
+{
+	char c[255];
+	int i;
+	FILE *fp;
+	fp=fopen(".\\Date\\10_linii.txt","w");
+	if(!fp)
+	{
+		printf("Fisierul nu s-a putut deschide pt. scriere.");
+		exit(1);	
+	}
+	printf("Introduceti 10 linii de text: \n");
+	for(i=0;i<10;i++)
+	{
+		printf("\nLinia %d: ",i);
+		gets(c);
+		fputs(c,fp); //in continuare
+		putc('\n',fp);
+		//fprintf("")
+	}
+	putc('\n',fp); // spatiu intre cele doua 
+	putc('\n',fp); // spatiu intre cele doua 
+	fclose(fp);
+	fp=fopen(".\\Date\\10_linii.txt","a");
+	if(!fp)
+	{
+		printf("Fisierul nu s-a putut deschide pentru adaugare.e");
+		exit(1);	
+	}
+	printf("\n\nFisierul a fost deschis pentru adaugare:");
+	printf("Introduceti alte 10 linii:\n");
+	for(i=0;i<10;i++)
+	{
+		printf("\nLinia %d: ",i);
+		gets(c);
+		fprintf(fp,"%s\n",c);
+	}
+	
+	fclose(fp);
+	system("cls");
+	printf("Continutul fisierului este:\n");
+	afisare_fisier(".\\Date\\10_linii.txt");
+
+	
+	getch();
+}
+
+void afisare_fisier(const char nume_fisier[])
+{
+	char c;
+	FILE *fp=fopen(".\\Date\\10_linii.txt","r");
+	//if(!fp);
+//	{
+//		printf("Fisierul nu a fost deschis pt. citire.");
+//		exit(1);
+//	}
+	while((c=getc(fp))!=EOF) // cat timp fisierul citit nu este eof
+	putch(c);
+	fclose(fp);
+	
+}

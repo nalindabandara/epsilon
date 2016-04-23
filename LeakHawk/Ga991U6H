@@ -1,0 +1,7 @@
+let
+   #"TimeRange" = Table.TransformColumnTypes(SettingsSheet,{{"From", type datetime}, {"To", type datetime}}),
+   From = #"TimeRange"[From],
+   #"To" = #"TimeRange"[To],
+   DateFormatString = "mm/dd/yy",
+   #"FormattedFrom" = Format(From,DateFormatString),
+   ...

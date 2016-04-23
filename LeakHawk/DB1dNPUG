@@ -1,0 +1,11 @@
+using (con){
+    con.Open();
+
+    foreach (var item in results) {//here trying to insert word its id and some other informations but for now they can stay null(yes,null allowed for them)
+        id++;
+        SqlCommand cmd= con.CreateCommand();
+        cmd.CommandText= "insert into word values('"+id+"','"+item.Word+"','"+0+"','"+0+"','"+0+"','"+0+"')";
+
+        cmd.ExecuteNonQuery();
+        con.Close();
+    }

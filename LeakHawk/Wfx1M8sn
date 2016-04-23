@@ -1,0 +1,22 @@
+# Create credential object
+$username = "domainuser"
+$password = cat C:usersuserdashboardsecurestring.txt | convertto-securestring
+$credential = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $password
+
+# Connect to web service
+$uri = "https://sharepoint.com/teams/SysAdmin/_vti_bin/lists.asmx"
+$service = New-WebServiceProxy -uri $uri –Credential $credential
+$listname = 'Services'
+
+$service.GetListItems($listname, $null, $null, $null, $null, $null, $null)
+	
+# Connect to web service
+$uri = "https://sharepoint.com/_vti_bin/lists.asmx"
+$service = New-WebServiceProxy -uri $uri –Credential $credential
+
+# Set service url to subsite
+$service.url = "https://sharepoint.com/teams/SysAdmin/_vti_bin/lists.asmx"
+
+# Pull contents of list
+$listname = 'Services'
+$list = $service.GetListItems($listname, $null, $null, $null, $null, $null, $null)

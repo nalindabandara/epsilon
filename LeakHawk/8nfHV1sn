@@ -1,0 +1,402 @@
+	public void initFromString(String sInit)
+	{
+		Log.i(TAG, "initFromString: " + sInit.substring(0, 50) + "...");
+		
+		try
+		{
+			JSONObject pJSONTarifmenu = new JSONObject(sInit);
+			reset();
+
+			paramnum[EjcGlobal.TYPE_ENTERPRISE] = pJSONTarifmenu.getJSONObject("ts").getJSONArray("item").length();
+			paramnum[EjcGlobal.TYPE_PRODUCT] = pJSONTarifmenu.getJSONObject("area").getJSONArray("item").length();
+			paramnum[EjcGlobal.TYPE_TIME] = pJSONTarifmenu.getJSONObject("time").getJSONArray("item").length();
+			paramnum[EjcGlobal.TYPE_USER] = pJSONTarifmenu.getJSONObject("user").getJSONArray("item").length();
+			paramnum[EjcGlobal.TYPE_COMFORT] = pJSONTarifmenu.getJSONObject("comf").getJSONArray("item").length();
+			paramnum[EjcGlobal.TYPE_QUALITY] = pJSONTarifmenu.getJSONObject("qual").getJSONArray("item").length();
+
+			m_iTarifMenuId = pJSONTarifmenu.getInt("id");
+			m_strTarifMenuName = pJSONTarifmenu.getString("name");
+			m_strTarifMenuVersion = pJSONTarifmenu.getString("version");
+			m_defaultAgbTyp = JSONParserUtil.getIntFromObject(pJSONTarifmenu, "defaultAGB", 1);
+
+			m_strFromToLabels = new String[paramnum[EjcGlobal.TYPE_ENTERPRISE]][3];
+			m_nFromToBehaviour = new int[paramnum[EjcGlobal.TYPE_ENTERPRISE]][3];
+			m_strFromToWordlists = new String[paramnum[EjcGlobal.TYPE_ENTERPRISE]][3];
+			m_paramtitle = new String[paramnum[EjcGlobal.TYPE_ENTERPRISE]][];
+
+			m_strIdentWordlists = new String[paramnum[EjcGlobal.TYPE_ENTERPRISE]];
+			m_nIdentBehaviour = new int[paramnum[EjcGlobal.TYPE_ENTERPRISE]];
+
+			// Enterprise:
+			Vector<EjcTicketProp> vTicketPropTarifspace = new Vector<EjcTicketProp>(paramnum[EjcGlobal.TYPE_ENTERPRISE]);
+			
+			JSONArray pJSONTarifspaceItems = pJSONTarifmenu.getJSONObject("ts").getJSONArray("item");
+			
+			for(int cntTs = 0; cntTs < paramnum[EjcGlobal.TYPE_ENTERPRISE]; cntTs++)
+			{
+				JSONObject pJSONTarifSpace = pJSONTarifspaceItems.getJSONObject(cntTs);
+				
+				String title = pJSONTarifSpace.getString("name");
+				String version = pJSONTarifSpace.getString("tv");
+				int space = pJSONTarifSpace.getInt("pv");
+				
+				long fProd = JSONParserUtil.getLongFromObject(pJSONTarifSpace, "area", -1);
+				long fTime = JSONParserUtil.getLongFromObject(pJSONTarifSpace, "time", -1);
+				long fUser = JSONParserUtil.getLongFromObject(pJSONTarifSpace, "user", -1);
+				long fComf = JSONParserUtil.getLongFromObject(pJSONTarifSpace, "comf", -1);
+				long fQual = JSONParserUtil.getLongFromObject(pJSONTarifSpace, "qual", -1);
+				
+				String url = "";
+				
+				if (pJSONTarifSpace.has("tarifbestimmungen"))
+				{
+					try
+					{
+						JSONObject tarifbestimmung = pJSONTarifSpace.getJSONObject("tarifbestimmungen");
+						url = tarifbestimmung.getString("url");
+					}
+					catch (JSONException jsonE)
+					{
+						// dann eben nicht
+					}
+				}
+				
+				String icon = "";
+				if (pJSONTarifSpace.has("icon"))
+				{
+					icon = pJSONTarifSpace.getString("icon");
+				}
+				
+				String color = "";
+				if (pJSONTarifSpace.has("color"))
+				{
+					color = pJSONTarifSpace.getString("color");
+				}
+				
+				EjcTicketProp pTarifSpace = new EjcTicketProp(cntTs, title, version, space, fProd, fTime, fUser, fComf, fQual, url, icon, color);
+
+				JSONObject pJSONTarifSpaceParams = pJSONTarifSpace.getJSONObject("params");
+				
+				m_paramtitle[cntTs] = new String[12];
+				m_paramtitle[cntTs][0] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "ts", "title", "missing default");
+				m_paramtitle[cntTs][1] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "area", "title", "missing default");
+				m_paramtitle[cntTs][2] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "time", "title", "missing default");
+				m_paramtitle[cntTs][3] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "user", "title", "Nutzer");
+				m_paramtitle[cntTs][4] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "comf", "title", "Komfort");
+				m_paramtitle[cntTs][5] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "qual", "title", "Qualität");
+				m_paramtitle[cntTs][6] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "vfd", "title", "Gültig ab");
+				m_paramtitle[cntTs][7] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "from", "title", "missing default");
+				m_paramtitle[cntTs][8] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "to", "title", "missing default");
+				m_paramtitle[cntTs][9] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "zone", "title", "missing default");
+				m_paramtitle[cntTs][10] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "ident", "title", "Identifikator");
+				m_paramtitle[cntTs][11] = JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "route", "title", "Route über");
+
+				JSONObject pJSONTarifSpaceParamsFrom = pJSONTarifSpaceParams.getJSONObject("from");
+				m_strFromToLabels[cntTs][0]		= pJSONTarifSpaceParamsFrom.getJSONObject("ort").getString("label");
+				m_nFromToBehaviour[cntTs][0]	= pJSONTarifSpaceParamsFrom.getJSONObject("ort").getInt("behaviour");
+				m_strFromToWordlists[cntTs][0]	= pJSONTarifSpaceParamsFrom.getJSONObject("ort").getString("wordlist");
+
+				m_strFromToLabels[cntTs][1]		= pJSONTarifSpaceParamsFrom.getJSONObject("id").getString("label");
+				m_nFromToBehaviour[cntTs][1]	= pJSONTarifSpaceParamsFrom.getJSONObject("id").getInt("behaviour");
+				m_strFromToWordlists[cntTs][1]	= pJSONTarifSpaceParamsFrom.getJSONObject("id").getString("wordlist");
+
+				m_strFromToLabels[cntTs][2]		= pJSONTarifSpaceParamsFrom.getJSONObject("hst").getString("label");
+				m_nFromToBehaviour[cntTs][2]	= pJSONTarifSpaceParamsFrom.getJSONObject("hst").getInt("behaviour");
+				m_strFromToWordlists[cntTs][2]	= pJSONTarifSpaceParamsFrom.getJSONObject("hst").getString("wordlist");
+
+				m_nIdentBehaviour[cntTs]	= JSONParserUtil.getIntFromChild(pJSONTarifSpaceParams, "ident", "behaviour",  0);
+				m_strIdentWordlists[cntTs]	= JSONParserUtil.getStringFromChild(pJSONTarifSpaceParams, "ident", "wordlist",  "");
+				
+				vTicketPropTarifspace.add(pTarifSpace);
+			}
+			m_TicketProperties.put(new Integer(EjcGlobal.TYPE_ENTERPRISE), vTicketPropTarifspace);
+
+			
+			// Area
+			Vector<EjcTicketProp> vTicketPropArea = new Vector<EjcTicketProp>(paramnum[EjcGlobal.TYPE_PRODUCT]);
+			JSONArray pJSONAreaItems = pJSONTarifmenu.getJSONObject("area").getJSONArray("item");
+			
+			for(int cntArea = 0; cntArea < paramnum[EjcGlobal.TYPE_PRODUCT]; cntArea++)
+			{
+				JSONObject pJSONArea = pJSONAreaItems.getJSONObject(cntArea);
+				
+				String title = pJSONArea.getString("name");
+				long fTS = JSONParserUtil.getLongFromObject(pJSONArea, "ts", -1);
+				long fTime = JSONParserUtil.getLongFromObject(pJSONArea, "time", -1);
+				long fUser = JSONParserUtil.getLongFromObject(pJSONArea, "user", -1);
+				long fComf = JSONParserUtil.getLongFromObject(pJSONArea, "comf", -1);
+				long fQual = JSONParserUtil.getLongFromObject(pJSONArea, "qual", -1);
+				int iNeedsFromTo = JSONParserUtil.getIntFromObject(pJSONArea, "fromto", 0);
+				int iUseZone = JSONParserUtil.getIntFromObject(pJSONArea, "zone", 0);	
+				int iRouteCount = JSONParserUtil.getIntFromObject(pJSONArea, "route", 0);
+				int iUse = JSONParserUtil.getIntFromObject(pJSONArea, "use", 0);
+				String ortList = JSONParserUtil.getStringFromObject(pJSONArea, "ortlist", "");
+				String zoneList = JSONParserUtil.getStringFromObject(pJSONArea, "zonelist", "");
+				
+				String icon = "";
+				if (pJSONArea.has("icon"))
+				{
+					icon = pJSONArea.getString("icon");
+				}
+				
+				String color = "";
+				if (pJSONArea.has("color"))
+				{
+					color = pJSONArea.getString("color");
+				}
+				
+				EjcTicketProp pArea = new EjcTicketProp(cntArea, title, fTS, fTime, fUser, fComf, fQual, iNeedsFromTo, iUseZone, iRouteCount, iUse, ortList, zoneList, icon, color);
+				vTicketPropArea.add(pArea);
+			}
+			m_TicketProperties.put(new Integer(EjcGlobal.TYPE_PRODUCT), vTicketPropArea);
+
+			
+			// Time
+			Vector<EjcTicketProp> vTicketPropTime = new Vector<EjcTicketProp>(paramnum[EjcGlobal.TYPE_TIME]);
+			JSONArray pJSONTimeItems = pJSONTarifmenu.getJSONObject("time").getJSONArray("item");
+			
+			for(int cntTime = 0; cntTime < paramnum[EjcGlobal.TYPE_TIME]; cntTime++)
+			{
+				JSONObject pJSONTime = pJSONTimeItems.getJSONObject(cntTime);
+				
+				String title = pJSONTime.getString("name");
+				long fTS = JSONParserUtil.getLongFromObject(pJSONTime, "ts", -1);
+				long fProd = JSONParserUtil.getLongFromObject(pJSONTime, "area", -1);
+				long fUser = JSONParserUtil.getLongFromObject(pJSONTime, "user", -1);
+				long fComf = JSONParserUtil.getLongFromObject(pJSONTime, "comf", -1);
+				long fQual = JSONParserUtil.getLongFromObject(pJSONTime, "qual", -1);
+				
+				boolean bMulti = pJSONTime.getBoolean("multiple");
+				int iNeedVfd = JSONParserUtil.getIntFromObject(pJSONTime, "needvfd", 0);
+				
+				String icon = "";
+				if (pJSONTime.has("icon"))
+				{
+					icon = pJSONTime.getString("icon");
+				}
+				
+				String color = "";
+				if (pJSONTime.has("color"))
+				{
+					color = pJSONTime.getString("color");
+				}
+				
+				
+				EjcTicketProp pTime = new EjcTicketProp(cntTime, title, fTS, fProd, fUser, fComf, fQual, bMulti, iNeedVfd, null, icon, color);
+				vTicketPropTime.add(pTime);
+			}
+			m_TicketProperties.put(new Integer(EjcGlobal.TYPE_TIME), vTicketPropTime);
+			
+
+			// User
+			Vector<EjcTicketProp> vTicketPropUser = new Vector<EjcTicketProp>(paramnum[EjcGlobal.TYPE_USER]);
+			JSONArray pJSONUserItems = pJSONTarifmenu.getJSONObject("user").getJSONArray("item");
+			
+			for(int cntUser = 0; cntUser < paramnum[EjcGlobal.TYPE_USER]; cntUser++)
+			{
+				JSONObject pJSONUser = pJSONUserItems.getJSONObject(cntUser);
+				
+				String title = pJSONUser.getString("name");
+				String multi = JSONParserUtil.getStringFromObject(pJSONUser, "ifmulti", title);
+				long fTS = JSONParserUtil.getLongFromObject(pJSONUser, "ts", -1);
+				long fProd = JSONParserUtil.getLongFromObject(pJSONUser, "area", -1);
+				long fTime = JSONParserUtil.getLongFromObject(pJSONUser, "time", -1);
+				long fComf = JSONParserUtil.getLongFromObject(pJSONUser, "comf", -1);
+				long fQual = JSONParserUtil.getLongFromObject(pJSONUser, "qual", -1);
+				
+				String icon = "";
+				if (pJSONUser.has("icon"))
+				{
+					icon = pJSONUser.getString("icon");
+				}
+				
+				String color = "";
+				if (pJSONUser.has("color"))
+				{
+					color = pJSONUser.getString("color");
+				}
+				
+				EjcTicketProp pUser = new EjcTicketProp(cntUser, title, multi, fTS, fProd, fTime, fComf, fQual, icon, color);
+				vTicketPropUser.add(pUser);
+			}
+			m_TicketProperties.put(new Integer(EjcGlobal.TYPE_USER), vTicketPropUser);
+
+			
+			// Comf
+			Vector<EjcTicketProp> vTicketPropComf = new Vector<EjcTicketProp>(paramnum[EjcGlobal.TYPE_COMFORT]);
+			JSONArray pJSONComfItems = pJSONTarifmenu.getJSONObject("comf").getJSONArray("item");
+			
+			for(int cntComf = 0; cntComf < paramnum[EjcGlobal.TYPE_COMFORT]; cntComf++)
+			{
+				JSONObject pJSONComf = pJSONComfItems.getJSONObject(cntComf);
+				
+				String title = pJSONComf.getString("name");
+				long fTS = JSONParserUtil.getLongFromObject(pJSONComf, "ts", -1);
+				long fProd = JSONParserUtil.getLongFromObject(pJSONComf, "area", -1);
+				long fTime = JSONParserUtil.getLongFromObject(pJSONComf, "time", -1);
+				long fUser = JSONParserUtil.getLongFromObject(pJSONComf, "user", -1);
+				long fQual = JSONParserUtil.getLongFromObject(pJSONComf, "qual", -1);
+				boolean bDefault = pJSONComf.getBoolean("default");
+				
+				String icon = "";
+				if (pJSONComf.has("icon"))
+				{
+					icon = pJSONComf.getString("icon");
+				}
+				
+				String color = "";
+				if (pJSONComf.has("color"))
+				{
+					color = pJSONComf.getString("color");
+				}
+				
+				EjcTicketProp pComf = new EjcTicketProp(cntComf, title, bDefault, fTS, fProd, fTime, fUser, fQual, icon, color);
+				vTicketPropComf.add(pComf);
+			}
+			m_TicketProperties.put(new Integer(EjcGlobal.TYPE_COMFORT), vTicketPropComf);
+
+			
+			// Qual
+			Vector<EjcTicketProp> vTicketPropQual = new Vector<EjcTicketProp>(paramnum[EjcGlobal.TYPE_QUALITY]);
+			JSONArray pJSONQualItems = pJSONTarifmenu.getJSONObject("qual").getJSONArray("item");
+			
+			for(int cntQual = 0; cntQual < paramnum[EjcGlobal.TYPE_QUALITY]; cntQual++)
+			{
+				JSONObject pJSONQual = pJSONQualItems.getJSONObject(cntQual);
+				
+				String title = pJSONQual.getString("name");
+				long fTS = JSONParserUtil.getLongFromObject(pJSONQual, "ts", -1);
+				long fProd = JSONParserUtil.getLongFromObject(pJSONQual, "area", -1);
+				long fTime = JSONParserUtil.getLongFromObject(pJSONQual, "time", -1);
+				long fUser = JSONParserUtil.getLongFromObject(pJSONQual, "user", -1);
+				long fComf = JSONParserUtil.getLongFromObject(pJSONQual, "comf", -1);
+				
+				String icon = "";
+				if (pJSONQual.has("icon"))
+				{
+					icon = pJSONQual.getString("icon");
+				}
+				
+				String color = "";
+				if (pJSONQual.has("color"))
+				{
+					color = pJSONQual.getString("color");
+				}
+				
+				EjcTicketProp pQual = new EjcTicketProp(cntQual, title, fTS, fProd, fTime, fUser, fComf, icon, color);
+				vTicketPropQual.add(pQual);
+			}
+			m_TicketProperties.put(new Integer(EjcGlobal.TYPE_QUALITY), vTicketPropQual);
+
+			// illegal combinations array
+			JSONArray pJSONIllegalArray = pJSONTarifmenu.getJSONObject("illegal").getJSONArray("combi");
+			
+			illnum = pJSONIllegalArray.length();
+			
+			illegal = new long[illnum][EjcGlobal.NUM_OF_FILTER_PARAMS];
+
+			for (int i = 0; i < illnum; i++)
+			{
+				JSONObject pJSONCombi = pJSONIllegalArray.getJSONObject(i);
+				illegal[i][EjcGlobal.TYPE_ENTERPRISE] = JSONParserUtil.getLongFromObject(pJSONCombi, "ts", -1);
+				illegal[i][EjcGlobal.TYPE_PRODUCT]  = JSONParserUtil.getLongFromObject(pJSONCombi, "area", -1);
+				illegal[i][EjcGlobal.TYPE_TIME] = JSONParserUtil.getLongFromObject(pJSONCombi, "time", -1);
+				illegal[i][EjcGlobal.TYPE_USER] = JSONParserUtil.getLongFromObject(pJSONCombi, "user", -1);
+				illegal[i][EjcGlobal.TYPE_COMFORT] = JSONParserUtil.getLongFromObject(pJSONCombi, "comf", -1);
+				illegal[i][EjcGlobal.TYPE_QUALITY] = JSONParserUtil.getLongFromObject(pJSONCombi, "qual", -1);
+			}
+
+			parseScreen1(pJSONTarifmenu);
+			parseScreen2(pJSONTarifmenu);
+			parseWordlists(pJSONTarifmenu);
+			parseTopseller(pJSONTarifmenu);
+			parseConfig(pJSONTarifmenu.getJSONObject("addConfig"));
+			parseAgbs(pJSONTarifmenu);
+			parseDocumentReferences(pJSONTarifmenu);
+			
+			m_bIsInitialized = true;
+		}
+		catch (JSONException e)
+		{
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	private void parseScreen1(JSONObject pJSONTarifmenu) throws JSONException
+	{
+		Log.i(TAG, "parseScreen1 - start");
+		
+		if (!pJSONTarifmenu.isNull("screen1"))
+		{
+			JSONObject pJSONScreen1 = pJSONTarifmenu.getJSONObject("screen1");
+			m_screen1  = Screen1.getInstanceFromJSON(pJSONScreen1);
+			Log.i(TAG, "## Screen1: " + m_screen1 );
+		}
+
+		Log.i(TAG, "parseScreen1 - done");
+	}
+
+
+	private void parseScreen2(JSONObject pJSONTarifmenu) throws JSONException
+	{
+		Log.i(TAG, "parseScreen2 - start");
+		
+		// read the Screen2 items number
+		JSONArray pJSONScreenItems = pJSONTarifmenu.getJSONObject("screen2").getJSONArray("item");
+		
+		int numScreen2Items = pJSONScreenItems.length();
+		long[][] screen2Filters = new long[numScreen2Items][EjcGlobal.NUM_OF_FILTER_PARAMS];
+		int[][] screen2ParamLists = new int[numScreen2Items][];
+		String[] screen2Entries = new String[numScreen2Items];
+		int[] screen2MessagesId = new int[numScreen2Items];
+		int[] screen2AcceptAgbTyp = new int[numScreen2Items];
+
+		// for each item in screen 2
+		for (int idxScreen2Item = 0; idxScreen2Item < numScreen2Items; idxScreen2Item++)
+		{
+			// get the filters
+			JSONObject pJSONScreenItem = pJSONScreenItems.getJSONObject(idxScreen2Item);
+			screen2Filters[idxScreen2Item][EjcGlobal.TYPE_ENTERPRISE] = JSONParserUtil.getLongFromChild(pJSONScreenItem, "filter", "ts", -1);
+			screen2Filters[idxScreen2Item][EjcGlobal.TYPE_PRODUCT]  = JSONParserUtil.getLongFromChild(pJSONScreenItem, "filter", "area", -1);
+			screen2Filters[idxScreen2Item][EjcGlobal.TYPE_TIME] = JSONParserUtil.getLongFromChild(pJSONScreenItem, "filter", "time", -1);
+			screen2Filters[idxScreen2Item][EjcGlobal.TYPE_USER] = JSONParserUtil.getLongFromChild(pJSONScreenItem, "filter", "user", -1);
+			screen2Filters[idxScreen2Item][EjcGlobal.TYPE_COMFORT] = JSONParserUtil.getLongFromChild(pJSONScreenItem, "filter", "comf", -1);
+			screen2Filters[idxScreen2Item][EjcGlobal.TYPE_QUALITY] = JSONParserUtil.getLongFromChild(pJSONScreenItem, "filter", "qual", -1);
+
+			// next params array
+			JSONArray pJSONScreenItemNextParamsArray = pJSONScreenItem.getJSONObject("nextparam").getJSONArray("param");
+			screen2ParamLists[idxScreen2Item] = new int[pJSONScreenItemNextParamsArray.length()];
+			
+			for(int idxParam = 0; idxParam < pJSONScreenItemNextParamsArray.length(); idxParam++)
+			{
+				JSONObject pJSONParam = pJSONScreenItemNextParamsArray.getJSONObject(idxParam);
+				screen2ParamLists[idxScreen2Item][idxParam] = EjcGlobal.convertNextParamNameToConstants(pJSONParam.getString("value"));
+			}
+
+			screen2Entries[idxScreen2Item] = pJSONScreenItem.getString("title");
+			screen2MessagesId[idxScreen2Item] = JSONParserUtil.getIntFromObject(pJSONScreenItem, "message", 0);
+			screen2AcceptAgbTyp[idxScreen2Item] = JSONParserUtil.getIntFromObject(pJSONScreenItem, "agb", m_defaultAgbTyp);
+			
+			Screen2ListItem pScreen2ListItem = new Screen2ListItem(idxScreen2Item, screen2Entries[idxScreen2Item], screen2Filters[idxScreen2Item], screen2ParamLists[idxScreen2Item], screen2MessagesId[idxScreen2Item], screen2AcceptAgbTyp[idxScreen2Item]);
+			
+			String icon = "";
+			if (pJSONScreenItem.has("icon"))
+			{
+				icon = pJSONScreenItem.getString("icon");
+			}
+			pScreen2ListItem.setIconName(icon);
+			
+			String color = "";
+			if (pJSONScreenItem.has("color"))
+			{
+				color = pJSONScreenItem.getString("color");
+			}
+			pScreen2ListItem.setColorName(color);
+			
+			
+			m_Screen2ListItems.add(pScreen2ListItem);
+		}
+		
+		Log.i(TAG, "parseScreen2 - done");
+	}

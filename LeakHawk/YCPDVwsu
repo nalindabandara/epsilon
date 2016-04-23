@@ -1,0 +1,10 @@
+@Model(adaptables=Resource.class)
+public class MyModel {
+
+    @Inject
+    private String propertyName;
+
+    public Image getPropertyName) {
+       return propertyName;
+    }
+}

@@ -1,0 +1,31 @@
+setUp Thread Group 1-1 [28] (RUNNABLE)
+   java.io.FileOutputStream.writeBytes line: not available [native method]
+   java.io.FileOutputStream.write line: 345 
+   java.io.BufferedOutputStream.write line: 122 
+   java.io.PrintStream.write line: 480 
+   org.apache.logging.log4j.core.util.CloseShieldOutputStream.write line: 50 
+   org.apache.logging.log4j.core.appender.OutputStreamManager.write line: 123 
+   org.apache.logging.log4j.core.appender.OutputStreamManager.write line: 136 
+   org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.append line: 114 
+   org.apache.logging.log4j.core.config.AppenderControl.tryCallAppender line: 152 
+   org.apache.logging.log4j.core.config.AppenderControl.callAppender0 line: 125 
+   org.apache.logging.log4j.core.config.AppenderControl.callAppenderPreventRecursion line: 116 
+   org.apache.logging.log4j.core.config.AppenderControl.callAppender line: 84 
+   org.apache.logging.log4j.core.config.LoggerConfig.callAppenders line: 390 
+   org.apache.logging.log4j.core.config.LoggerConfig.processLogEvent line: 378 
+   org.apache.logging.log4j.core.config.LoggerConfig.log line: 362 
+   org.apache.logging.log4j.core.config.LoggerConfig.log line: 352 
+   org.apache.logging.log4j.core.config.AwaitCompletionReliabilityStrategy.log line: 63 
+   org.apache.logging.log4j.core.Logger.logMessage line: 147 
+   org.apache.logging.slf4j.Log4jLogger.log line: 375 
+   org.apache.commons.logging.impl.SLF4JLocationAwareLog.info line: 155 
+   org.springframework.core.io.support.PropertiesLoaderSupport.loadProperties line: 172 
+   org.springframework.core.io.support.PropertiesLoaderSupport.mergeProperties line: 156 
+   org.springframework.context.support.PropertySourcesPlaceholderConfigurer.postProcessBeanFactory line: 137 
+   org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors line: 694 
+   org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors line: 669 
+   org.springframework.context.support.AbstractApplicationContext.refresh line: 461 
+   org.springframework.context.support.ClassPathXmlApplicationContext.<init> line: 139 
+   org.springframework.context.support.ClassPathXmlApplicationContext.<init> line: 83 
+   sun.reflect.NativeConstructorAccessorImpl.newInstance0 line: not available [native method]
+[...]

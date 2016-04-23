@@ -1,0 +1,56 @@
+select kgroup.*, count(userGroup.uid) 
+from kernelGroup kgroup 
+ left join kernelUserGroup userGroup on (kgroup.groupId = userGroup.groupId) 
+group by kgroup.groupId
+	
+@Entity
+@Table(name="kernel_group")
+public class KernelGroup implements Serializable {
+
+  @Id
+  private int groupId;
+
+  private boolean autoGroup;
+
+  private String groupName;
+
+  @OneToMany
+  private Set<KernelUserGroup> kernelUserGroups;
+
+  private long jpaVersion; 
+}
+
+
+@Entity
+@Table(name="kernel_usergroup")
+public class KernelUserGroup implements Serializable {
+
+  @EmbeddedId
+  private KernelUserGroupPK id;
+
+  private long jpaVersion;
+
+  @ManyToOne
+  private KernelGroup kernelGroup;
+
+  @ManyToOne
+  private KernelUser kernelUser;
+}
+
+@Embeddable
+public class KernelUserGroupPK implements Serializable {
+  private String uid;
+  private int groupId;
+}
+	
+CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<KernelGroupDto> cQuery = cb.createQuery(KernelGroupDto.class);
+        Root<KernelGroup> root = cQuery.from(KernelGroup.class);
+
+        Join<KernelGroup, KernelUserGroup> userGroupsJoin = root.join(KernelGroup_.kernelUserGroups, JoinType.LEFT);
+
+        cQuery.select(cb.construct(KernelGroupDto.class, root, cb.count(userGroupsJoin.get(KernelUserGroup_.id).get(KernelUserGroupPK_.uid))));
+
+        cQuery.groupBy(root.get(KernelGroup_.groupId));
+
+        em.createQuery(cQuery).getResultList();

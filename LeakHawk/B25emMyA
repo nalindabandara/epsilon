@@ -1,0 +1,18 @@
+var client:MongoClient?
+    do {
+        client = try MongoClient(uri: "mongodb://210.245.20.158")
+    } catch _ {
+        print("Can not connect to mongodb://210.245.20.158")
+    }
+    let db = client?.getDatabase("truongton")
+    let col = db?.getCollection("user")
+    var document:BSON?
+    do {
+        document = try BSON(json: "{"name": "bao 13"}")
+    } catch _ {
+        print("BSON is not valid")
+    }
+    if(document != nil){
+        col?.insert(document!)
+    }
+    client?.close()

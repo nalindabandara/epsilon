@@ -1,0 +1,14 @@
+public with sharing Class LeadHelper {
+    public String FXRating {get;set;}
+    public String Status {get;set;}
+    public String AnalyticsId {get;set;}
+    public String AccountBussinessID {get;set;}
+    public String source {Get;set;}
+
+    LeadHelper(Lead L){
+        AccountBussinessID = (L.isConverted)? String.valueOf(L.ConvertedAccountID):'';
+        FXRating = (L.FXRatingLetter__c=='A+')? 'A%2B' :L.FXRatingLetter__c;
+        Status = L.Lead_Status_GA__c;
+        AnalyticsId = L.analytics_id__c;
+    }
+   }

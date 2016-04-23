@@ -1,0 +1,3 @@
+runModule.bat module.py "source file.txt"
+	
+python _runModule.py %*

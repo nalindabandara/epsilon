@@ -1,0 +1,1 @@
+Job::whereDate('created_at', '>=', $pdate)->with('address')->with('newprop' => function('Employees')->count());

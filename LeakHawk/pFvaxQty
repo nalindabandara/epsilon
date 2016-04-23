@@ -1,0 +1,3 @@
+<apex:form enctype="multipart/form-data" id="uploadForm" styleClass="Grid ReportForm">
+  <!-- code -->
+</apex:form>

@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Input your file"
+read $file
+path=(readlink -f $file)
+echo "$USER, $path" >> scriptlog.txt
+	
+$
+	
+path=$(readlink -f $file)
+	
+#!/bin/bash
+echo "Input your file"
+IFS= read -r "$file"
+path=(readlink -f "$file")
+echo "$USER, $path" >> scriptlog.txt

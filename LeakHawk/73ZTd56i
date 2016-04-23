@@ -1,0 +1,9 @@
+# Code snippet for calculating the sizes of all objects in the current R session
+
+library(data.table)
+
+objectNames <- ls()
+objectSizes <- lapply(lapply(lapply(objectNames, parse, file="", n=NULL), eval), object.size)
+objectDf <- data.table(data.frame(Name=objectNames, Size=unlist(objectSizes)))[order(Size),]
+
+# data.table is needed to order the data frame on the fly.
