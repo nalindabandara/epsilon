@@ -248,6 +248,7 @@ public class FeedEntry extends SavableObject {
 		this.status = SavableObject.LOADED;
 		this.entryId = rs.getInt("entry_id");
 		this.key = rs.getString("entry_key");
+		this.title = rs.getString("entry_title");
 		this.entryStream = rs.getBinaryStream("entry_file");
 	}
 
