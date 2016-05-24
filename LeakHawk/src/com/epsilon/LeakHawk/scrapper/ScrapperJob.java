@@ -29,6 +29,7 @@ public class ScrapperJob extends Thread {
 	
 	private void launch() {
 
+		System.out.println("*************** Scrapper Job Started ****************");
 		if( ScrapperManager.keyWordList != null && ScrapperManager.keyWordList.size() > 0 ){
 			
 			if( this.feedEntryList != null && this.feedEntryList.size() > 0 ){
@@ -68,7 +69,7 @@ public class ScrapperJob extends Thread {
 		} else {			
 			System.out.println( "****************** No keywords were found for the scrapper job ******************");
 		}
-		System.out.println("*************** Scrapper Job Stopped ****************\n\n");
+		System.out.println("*************** Scrapper Job Ended ****************\n\n");
 
 		
 	}

@@ -69,7 +69,7 @@ public class ScrapperManager {
 		int count = 0;
 		FeedEntry firstElement = null;
 		while (true) {			
-			System.out.println("*************** Scrapper Job Started ****************");
+			
 			printDate();
 			long start = System.currentTimeMillis();
 
@@ -100,8 +100,7 @@ public class ScrapperManager {
 			scrapperJob.setFeedEntryList( newFeedEntryList );				
 			scrapperJob.start();
 			
-			if( count == 0 ){
-				System.out.println("****************** Custer Job Started *******************");
+			if( count == 0 ){				
 				FeatureExtractionJob clusterJob = new FeatureExtractionJob();
 				clusterJob.start();
 			}

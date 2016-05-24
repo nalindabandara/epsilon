@@ -3,6 +3,7 @@ package com.epsilon.LeakHawk.feature.extraction;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,23 +23,31 @@ public class FeatureExtractionJob extends Thread {
 	
 	private void launch() {
 		
+		System.out.println("********************************************************************");		
+		System.out.println("**************   Feature Extraction Job started    *****************");		
+		System.out.println("********************************************************************");
+		
 		DBManager dbManager = new DBManager();
 		
 		while ( true ){
 			
+			System.out.println("**************   Feature Extraction cycle started  *****************");		
 			List<FeedEntry> feedEntryList = dbManager.loadFeedEntryTobeProcessed();
-			
-			for( FeedEntry entry : feedEntryList){			
 				
-				saveEntryAsFile( entry );
-				applyScripts( entry );
-							
+			if( feedEntryList.size() > 0 ){		
+				
+				for( FeedEntry entry : feedEntryList){								
+					saveEntryAsFile( entry );
+					applyScripts( entry );
+								
+				}
+				dbManager.updateFeedEntryBatch(feedEntryList);
 			}
-			
-			dbManager.updateFeedEntryBatch(feedEntryList);
+						
 			System.out.println( feedEntryList.size() + " Feed entries were successfully processed.");
+			System.out.println("**************   Feature Extraction cycle ended  ******************\n");	
 			try {
-				Thread.sleep( 60000 );
+				Thread.sleep( 30000 );
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
 			}
@@ -70,19 +79,19 @@ public class FeatureExtractionJob extends Thread {
 				
 		BufferedReader reader = null;
 		BufferedWriter writer = null;
+		String fileName = "";
 		try {
 			
-			String fileName = entry.getKey();
+			fileName = entry.getKey();
 			if( entry.getTitle() != null ) {
-				fileName = fileName.concat( entry.getTitle() );
+				fileName = fileName.concat("-").concat( entry.getTitle() );
 			}
-			System.out.println("file name:" + fileName );
-			System.out.println("title:" + entry.getTitle());
+			
 			entry.setEntryFileName(fileName);
 						
 		    reader = new BufferedReader(new InputStreamReader(
 					entry.getEntryStream()));
-		    File file = new File( "/home/nalinda/LeakHawk-files/", fileName );
+		    File file = new File( "E:\\Mywork\\Pasbin\\", fileName );
 		    writer = new BufferedWriter(new FileWriter(file));
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -94,8 +103,12 @@ public class FeatureExtractionJob extends Thread {
 			System.out.println("Entry successfully saved to : " + file.getAbsolutePath() );
 			
 		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
+			System.out.println("Unable to create a file with the name  : " +  fileName);
+		} catch (Exception fe) {
+			System.out.println("Unable to create a file with the name  : " +  fileName);
+		}
+		
+		finally {
 			
 			try {
 				
