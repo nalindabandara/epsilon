@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
 
-import com.epsilon.LeakHawk.db.DBManager;
+import com.epsilon.LeakHawk.io.DBManager;
 import com.epsilon.LeakHawk.scrapper.FeedEntry;
 
 public class FeatureExtractionJob extends Thread {

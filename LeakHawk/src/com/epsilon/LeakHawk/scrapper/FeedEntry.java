@@ -12,9 +12,9 @@ import java.sql.SQLException;
 
 import org.json.simple.JSONObject;
 
-import com.epsilon.LeakHawk.db.DBConnector;
-import com.epsilon.LeakHawk.db.DBTransaction;
-import com.epsilon.LeakHawk.db.SavableObject;
+import com.epsilon.LeakHawk.io.DBConnector;
+import com.epsilon.LeakHawk.io.DBTransaction;
+import com.epsilon.LeakHawk.io.SavableObject;
 
 
 

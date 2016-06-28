@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.epsilon.LeakHawk.db.DBConnector;
-import com.epsilon.LeakHawk.db.DBManager;
+import com.epsilon.LeakHawk.io.DBConnector;
+import com.epsilon.LeakHawk.io.DBManager;
 
 
 public class ScrapperJob extends Thread {
