@@ -49,6 +49,40 @@ public class DBManager {
 		}
 	}
 	
+	
+	public void saveContextFeedEntryBatch( List<FeedEntry> entryList ){
+		
+		Connection con = null;
+		PreparedStatement statement = null;
+		try {
+			con = DBConnector.getConnection();
+			
+            StringBuilder sb = new StringBuilder("INSERT INTO feed_entry_context ( ");                       
+            sb.append("entry_key, "); 
+            sb.append("entry_url, ");
+            sb.append("entry_title, ");
+            sb.append("entry_file_name, ");            
+            sb.append("entry_user ) VALUES ( ?, ?, ?, ?, ? ); ");
+            statement = con.prepareStatement( sb.toString() );
+            
+            for( FeedEntry feedEntry : entryList){
+            	insertFeedEntryBatch( feedEntry, statement );
+            }
+            
+            statement.executeBatch();            
+            
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				DBConnector.closeStatement(statement);
+				DBConnector.closeConnection(con);				
+			} catch (SQLException e) {				
+				e.printStackTrace();
+			}			
+		}
+	}
+	
 	private void insertFeedEntryBatch( FeedEntry feedEntry, PreparedStatement statement) throws MalformedURLException, IOException{
 		
 		 int count = 0;           
@@ -65,9 +99,11 @@ public class DBManager {
 		} 		
 	}
 	
+	
+	
 	public void updateFeedEntryBatch( List<FeedEntry> entryList ){
 		
-		Connection con = null;
+/*		Connection con = null;
 		PreparedStatement statement = null;
 		try {
 			con = DBConnector.getConnection();
@@ -95,14 +131,14 @@ public class DBManager {
 			} catch (SQLException e) {				
 				e.printStackTrace();
 			}			
-		}
+		}*/
 	}
 	
 	
 	public List<FeedEntry> loadFeedEntryTobeProcessed(){
 		
 		List<FeedEntry> entryList = new ArrayList<FeedEntry>();
-		Connection con = null;
+/*		Connection con = null;
 		PreparedStatement statement = null;
 		ResultSet rs = null;
 		
@@ -128,7 +164,7 @@ public class DBManager {
 			} catch (SQLException e) {				
 				e.printStackTrace();
 			}			
-		}
+		}*/
 		return entryList;
 	}
 }

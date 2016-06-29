@@ -1,5 +1,0 @@
-install.packages("devtools", dep=TRUE)
-
-library(devtools)
-
-install_github("mvabund", username="aliceyiwang")

@@ -1,3 +1,0 @@
-encrypted filename <- AES(key, IV, original filename).
-	
-encrypted file <- AES(key, IV, original file)

@@ -1,2 +1,0 @@
-read_vcd -vcd_module call –module E_F –activity_profile –start_time 10 –
-end_time 100 –time_window 10 pw.vcd

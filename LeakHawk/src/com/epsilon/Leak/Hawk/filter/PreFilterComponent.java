@@ -3,13 +3,13 @@ package com.epsilon.Leak.Hawk.filter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.epsilon.Leak.Hawk.LeakHawkManager;
 import com.epsilon.Leak.Hawk.model.FeedEntry;
 import com.epsilon.Leak.Hawk.utils.LeakHawkUtils;
-import com.epsilon.LeakHawk.scrapper.ScrapperManager;
 
 public class PreFilterComponent {
 	
@@ -17,7 +17,7 @@ public class PreFilterComponent {
 	
 	private List<FeedEntry> originalEntryList;
 	
-	private List<FeedEntry> filteredEntryList;
+	private List<FeedEntry> filteredEntryList = new ArrayList<FeedEntry>();
 	
 	public PreFilterComponent( List<FeedEntry> list ){
 		
@@ -40,7 +40,9 @@ public class PreFilterComponent {
 				}
 			}		
 		} else {
-			filteredEntryList.addAll( originalEntryList );
+			if( originalEntryList != null && originalEntryList.size() > 0 ){
+				filteredEntryList.addAll( originalEntryList );
+			}			
 		}
 		
 	}

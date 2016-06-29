@@ -1,5 +1,0 @@
-def animate(self):
-    self.__draw_one_frame()
-    self.master.after(120, self.animate())
-	
-mainloop()

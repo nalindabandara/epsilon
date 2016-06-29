@@ -8,6 +8,7 @@ import java.util.List;
 import com.epsilon.Leak.Hawk.aggregator.PatbinAggrgator;
 import com.epsilon.Leak.Hawk.model.FeedEntry;
 import com.epsilon.Leak.Hawk.sensor.PastbinSensor;
+import com.epsilon.Leak.Hawk.utils.LeakHawkUtils;
 
 public class LeakHawkManager {
 
@@ -17,6 +18,7 @@ public class LeakHawkManager {
 	
 	public static void main( String[] args ){
 		
+		LeakHawkUtils.readConfigFile();
 		
 		System.out.print("Do you want to apply the Pre Filter ? [y/n] : ");		
 		try{

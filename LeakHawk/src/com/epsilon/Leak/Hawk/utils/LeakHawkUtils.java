@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 
@@ -17,7 +16,7 @@ public class LeakHawkUtils {
 	private static SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd 'at' hh:mm:ss");
 
 	// Reading the configuration file
-	static {
+	public static void readConfigFile() {
 		
 		InputStream input = null;
 		try {

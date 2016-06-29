@@ -60,7 +60,7 @@ public class ScrapperJob extends Thread {
 						}														
 					}							
 				}
-				dbManager.saveFeedEntryBatch( eligibleEntryList);
+				//dbManager.saveFeedEntryBatch( eligibleEntryList);
 				System.out.println("Number of entries saved as a batch : " + eligibleEntryList.size() );
 				
 			} else {

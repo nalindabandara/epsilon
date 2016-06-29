@@ -23,7 +23,7 @@ public class FeatureExtractionJob extends Thread {
 	
 	private void launch() {
 		
-		System.out.println("********************************************************************");		
+		/*System.out.println("********************************************************************");		
 		System.out.println("**************   Feature Extraction Job started    *****************");		
 		System.out.println("********************************************************************");
 		
@@ -51,7 +51,7 @@ public class FeatureExtractionJob extends Thread {
 			} catch (InterruptedException e) {				
 				e.printStackTrace();
 			}
-		}		
+		}		*/
 	}
 	
 	
