@@ -96,7 +96,7 @@ public class FileManager {
 		
 		if( entryTitle != null && entryTitle.length() > 0 ){
 			
-			System.out.println("Entry Title : " + entryTitle );
+			//System.out.println("Entry Title : " + entryTitle );
 			
 			if( isValidName( entryTitle ) ){
 				fileName = fileName.concat("-").concat( entryTitle );

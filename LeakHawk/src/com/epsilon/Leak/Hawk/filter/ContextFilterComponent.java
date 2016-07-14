@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,6 +43,8 @@ public class ContextFilterComponent {
 				if( regExpressionMatched( entry ) ){
 					
 					filteredEntryList.add(entry);
+					System.out.println("*******************  Context Filter Match Fount ******************");
+					System.out.println("FILE NAME : " + entry.getEntryFileName());
 				}
 			}
 
@@ -67,23 +70,23 @@ public class ContextFilterComponent {
 		    
 		    // Now create matcher object.
 		    		      
-			if( entry.getEntryStream() != null ){
-			    reader = new BufferedReader(new InputStreamReader( entry.getEntryStream() ));			   
-				String line;
+			
+		    URL my_url = new URL(entry.getScrapperUrl());
+			reader = new BufferedReader(new InputStreamReader( my_url.openStream() ));			   
+			String line;
+			
+			while ((line = reader.readLine()) != null) {								
 				
-				while ((line = reader.readLine()) != null) {								
-					
-					Matcher matcher1 = pattern1.matcher(line);
-					if ( matcher1.find() ) {
-						return true;
-					}
-					
-					Matcher matcher2 = pattern2.matcher(line);
-					if ( matcher2.find() ) {
-						return true;
-					}					
-				}	
-			}
+				Matcher matcher1 = pattern1.matcher(line);
+				if ( matcher1.find() ) {
+					return true;
+				}
+				
+				Matcher matcher2 = pattern2.matcher(line);
+				if ( matcher2.find() ) {
+					return true;
+				}					
+			}	
 			
 		} catch (IOException e) {
 			e.printStackTrace();

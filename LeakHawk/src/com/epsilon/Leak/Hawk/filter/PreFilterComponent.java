@@ -1,6 +1,7 @@
 package com.epsilon.Leak.Hawk.filter;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,9 +51,10 @@ public class PreFilterComponent {
 	
 	private boolean isContainKeyWord(FeedEntry entry ) {
 
+		BufferedReader br = null;
 		try {			
 			URL my_url = new URL(entry.getScrapperUrl());
-			BufferedReader br = new BufferedReader(new InputStreamReader(
+			br = new BufferedReader(new InputStreamReader(
 					my_url.openStream()));
 			String strTemp = "";
 			while (null != (strTemp = br.readLine())) {
@@ -67,7 +69,17 @@ public class PreFilterComponent {
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		} finally{
+			if( br != null ){
+				try {
+					br.close();
+				} catch (IOException e) {					
+					e.printStackTrace();
+				}
+			}
+			
 		}
+		
 		return false;
 	}
 	
